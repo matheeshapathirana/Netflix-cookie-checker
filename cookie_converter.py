@@ -1,6 +1,5 @@
 import json
 
-
 def convert_netscape_cookie_to_json(cookie_file_content):
     cookies = []
     for line in cookie_file_content.splitlines():
