@@ -1,4 +1,11 @@
 import json
+import os
+import tkinter
+from tkinter import filedialog
+
+
+tkinter.Tk().withdraw() # prevents an empty tkinter window from appearing
+folder_path = filedialog.askdirectory()
 
 def convert_netscape_cookie_to_json(cookie_file_content):
     cookies = []
@@ -20,15 +27,22 @@ def convert_netscape_cookie_to_json(cookie_file_content):
     return json_data
 
 
-# Usage example
-num = 1
-while (num != 195):
-    cookie_file_path = f'netscape_cookies/cookie ({num}).txt'
-    with open(cookie_file_path, 'r') as cookie_file:
-        cookie_file_content = cookie_file.read()
+for filename in os.listdir(folder_path):
+    filepath = os.path.join(folder_path, filename)
+    if os.path.isfile(filepath):
+        with open(filepath, 'r') as file:
+            content = file.read()
 
-    json_data = convert_netscape_cookie_to_json(cookie_file_content)
-    f = open(f"json_cookies/jsoncookie ({num}).txt", 'w')
-    f.write(json_data)
-    print(f'Cookie no. {num} DONE!')
-    num+=1
+
+# Usage example
+# num = 1
+# while (num != 195):
+#     cookie_file_path = f'{folder_path}/cookie ({num}).txt'
+#     with open(cookie_file_path, 'r') as cookie_file:
+#         cookie_file_content = cookie_file.read()
+
+        json_data = convert_netscape_cookie_to_json(content)
+        f = open(f"new/jsoncookie ({filename}).txt", 'w')
+        f.write(json_data)
+        print(f'Cookie no. {filename} DONE!')
+
