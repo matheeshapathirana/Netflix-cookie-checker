@@ -5,11 +5,15 @@ import tkinter
 from tkinter import filedialog
 import shutil
 
-print("\n<<< Select Netscape cookies folder >>>\n\n")
-tkinter.Tk().withdraw()
-folder_path = filedialog.askdirectory()
+while True:
+    print("\n<<< Select Netscape cookies folder >>>\n\n")
+    tkinter.Tk().withdraw()
+    folder_path = filedialog.askdirectory()
+    if folder_path != '':
+        break
 
 rand_number = random.randint(1, 99999)
+
 
 def convert_netscape_cookie_to_json(cookie_file_content):
     cookies = []
@@ -76,4 +80,4 @@ except FileExistsError:
                 f.write(json_data)
                 print(f'{filename} - DONE!')
 
-print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
+        print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
