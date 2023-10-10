@@ -34,7 +34,7 @@ def open_webpage_with_cookies(url, cookies):
         driver.quit()
     else:
         print(f"Working cookie found! - {filename}")
-        a = open(f'working_cookies/working_cookie ({filename})', 'w')
+        a = open(f'working_cookies/{filename})', 'w')
         a.write(content)
         driver.quit()
 
