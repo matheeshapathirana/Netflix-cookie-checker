@@ -19,21 +19,21 @@ if config.use_folder_selector:
         print(f"Using path: {folder_path}")
 
 
-def load_cookies_from_json(filepath):
-    with open(filepath, "r") as cookie_file:
-        cookies = json.load(cookie_file)
-    return cookies
+def load_cookies_from_json(FILEPATH):
+    with open(FILEPATH, "r") as cookie_file:
+        cookie = json.load(cookie_file)
+    return cookie
 
 
-def open_webpage_with_cookies(url, cookies):
+def open_webpage_with_cookies(URL, COOKIES):
     firefox_options = Options()
     firefox_options.headless = True
     driver = webdriver.Firefox(options=firefox_options)
     if config.use_minimized:
         driver.minimize_window()
-    driver.get(url)
+    driver.get(URL)
 
-    for cookie in cookies:
+    for cookie in COOKIES:
         driver.add_cookie(cookie)
 
     driver.refresh()
