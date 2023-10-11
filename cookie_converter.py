@@ -38,7 +38,7 @@ def convert_netscape_cookie_to_json(cookie_file_content):
 path = "json_cookies"
 try:
     os.mkdir(path)
-    print("Folder %s created!" % path)
+    print(f"Folder {path} created!")
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
         if os.path.isfile(filepath):
