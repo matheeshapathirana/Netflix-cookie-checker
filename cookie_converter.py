@@ -47,9 +47,9 @@ try:
 
             json_data = convert_netscape_cookie_to_json(content)
 
-            f = open(f"json_cookies/{filename}", "w")
-            f.write(json_data)
-            print(f"{filename} - DONE!")
+            with open(f"json_cookies/{filename}", "w") as f:
+                f.write(json_data)
+                print(f"{filename} - DONE!")
 
 except FileExistsError:
     if (
@@ -68,9 +68,10 @@ except FileExistsError:
 
                 json_data = convert_netscape_cookie_to_json(content)
 
-                f = open(f"json_cookies/{filename}", "w")
-                f.write(json_data)
-                print(f"{filename} - DONE!")
+                with open(f"json_cookies/{filename}", "w") as f:
+                    f.write(json_data)
+                    print(f"{filename} - DONE!")
+
     else:
         os.mkdir(str(f"temp {rand_number}"))
         for filename in os.listdir(folder_path):
@@ -81,8 +82,8 @@ except FileExistsError:
 
                 json_data = convert_netscape_cookie_to_json(content)
 
-                f = open(f"temp {rand_number}/{filename}", "w")
-                f.write(json_data)
-                print(f"{filename} - DONE!")
+                with open(f"temp {rand_number}/{filename}", "w") as f:
+                    f.write(json_data)
+                    print(f"{filename} - DONE!")
 
         print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
