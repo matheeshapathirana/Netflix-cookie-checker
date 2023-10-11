@@ -45,13 +45,13 @@ def open_webpage_with_cookies(URL, COOKIES):
         print(f"Working cookie found! - {filename}")
         try:
             os.mkdir(working_cookies_path)
-            a = open(f"working_cookies/{filename})", "w")
-            a.write(content)
+            with open(f"working_cookies/{filename})", "w") as a:
+                a.write(content)
             driver.quit()
 
         except:
-            a = open(f"working_cookies/{filename})", "w")
-            a.write(content)
+            with open(f"working_cookies/{filename}", "w") as a:
+                a.write(content)
             driver.quit()
 
 
