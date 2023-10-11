@@ -1,4 +1,4 @@
-#use True or False
+# use True or False
 
 
 use_minimized = True  # minimize selenium browser
