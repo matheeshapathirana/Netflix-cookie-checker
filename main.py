@@ -1,11 +1,11 @@
 import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
 import os
 import tkinter
 from tkinter import filedialog
 import config
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 
 working_cookies_path = 'working_cookies'
 
