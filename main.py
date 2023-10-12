@@ -20,7 +20,7 @@ if config.use_folder_selector:
 
 
 def load_cookies_from_json(FILEPATH):
-    with open(FILEPATH, "r") as cookie_file:
+    with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
         cookie = json.load(cookie_file)
     return cookie
 
@@ -45,12 +45,12 @@ def open_webpage_with_cookies(URL, COOKIES):
         print(f"Working cookie found! - {filename}")
         try:
             os.mkdir(working_cookies_path)
-            with open(f"working_cookies/{filename})", "w") as a:
+            with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
                 a.write(content)
             driver.quit()
 
-        except:
-            with open(f"working_cookies/{filename}", "w") as a:
+        except FileExistsError:
+            with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
                 a.write(content)
             driver.quit()
 
@@ -58,7 +58,7 @@ def open_webpage_with_cookies(URL, COOKIES):
 for filename in os.listdir("json_cookies"):
     filepath = os.path.join("json_cookies", filename)
     if os.path.isfile(filepath):
-        with open(filepath, "r") as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             content = file.read()
 
             url = "https://netflix.com/login"
@@ -66,5 +66,5 @@ for filename in os.listdir("json_cookies"):
             try:
                 cookies = load_cookies_from_json(filepath)
                 open_webpage_with_cookies(url, cookies)
-            except:
-                print(f"Invalid Cookie or webdriver error - {filename}")
+            except Exception as e:
+                print(f"Error occurred: {str(e)} - {filename}")
