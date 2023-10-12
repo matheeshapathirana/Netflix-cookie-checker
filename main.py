@@ -67,4 +67,4 @@ for filename in os.listdir("json_cookies"):
                 cookies = load_cookies_from_json(filepath)
                 open_webpage_with_cookies(url, cookies)
             except:
-                print(f"Invalid Cookie - {filename}")
+                print(f"Invalid Cookie or webdriver error - {filename}")
