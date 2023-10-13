@@ -58,4 +58,4 @@ try:
                     print(f"Error occurred {str(e)} - {filename}")
 
 except FileNotFoundError:
-    print("Error occurred : 'json_cookies' folder not found!. Please read README.nd")
+    print("Error occurred : 'json_cookies' folder not found!. Please read README.md")
