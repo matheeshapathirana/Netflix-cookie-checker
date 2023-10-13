@@ -3,6 +3,8 @@
 
 **Checks Cookies for validity.**
 
+**Education purpose only.*
+
 ![Logo](images/netflix_logo.jpg)
 
 
