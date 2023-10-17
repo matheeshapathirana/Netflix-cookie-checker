@@ -1,16 +1,22 @@
 import json
 import os
 import random
-import tkinter
-from tkinter import filedialog
 import shutil
 
-while True:
-    print("\n<<< Select Netscape cookies folder >>>\n\n")
-    tkinter.Tk().withdraw()
-    folder_path = filedialog.askdirectory()
-    if folder_path != "":
-        break
+if os.name == "posix":
+    folder_path = "cookies"
+
+else:
+    while True:
+        import tkinter
+        from tkinter import filedialog
+        print("\n<<< Select Netscape cookies folder >>>\n\n")
+        tkinter.Tk().withdraw()
+        folder_path = filedialog.askdirectory()
+        if folder_path != "":
+            print("Using default folder 'cookies'")
+            folder_path = "cookies"
+            break
 
 rand_number = random.randint(1, 99999)
 
@@ -21,7 +27,7 @@ def convert_netscape_cookie_to_json(cookie_file_content):
         fields = line.strip().split("\t")
         if len(fields) >= 7:
             cookie = {
-                "domain": fields[0],
+                "domain": fields[0].replace("www", ""),
                 "flag": fields[1],
                 "path": fields[2],
                 "secure": fields[3] == "TRUE",
