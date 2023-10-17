@@ -1,7 +1,5 @@
 import json
 import os
-import tkinter
-from tkinter import filedialog
 import config
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,14 +7,21 @@ from selenium.webdriver.firefox.options import Options
 
 working_cookies_path = "working_cookies"
 
-if config.use_folder_selector:
-    tkinter.Tk().withdraw()
-    folder_path = filedialog.askdirectory()
-    if folder_path == "":
-        folder_path = "json_cookies"
-        print("Using default path")
-    else:
-        print(f"Using path: {folder_path}")
+if os.name == "posix":
+    folder_path = "json_cookies"
+
+else:
+    import tkinter
+    from tkinter import filedialog
+
+    if config.use_folder_selector:
+        tkinter.Tk().withdraw()
+        folder_path = filedialog.askdirectory()
+        if folder_path == "":
+            folder_path = "json_cookies"
+            print("Using default path")
+        else:
+            print(f"Using path: {folder_path}")
 
 
 def load_cookies_from_json(FILEPATH):
