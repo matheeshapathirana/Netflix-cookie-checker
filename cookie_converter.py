@@ -10,6 +10,7 @@ else:
     while True:
         import tkinter
         from tkinter import filedialog
+
         print("\n<<< Select Netscape cookies folder >>>\n\n")
         tkinter.Tk().withdraw()
         folder_path = filedialog.askdirectory()
