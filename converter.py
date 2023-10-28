@@ -1,48 +1,47 @@
-from pathlib import Path
-import getpass
 import webbrowser
+from pathlib import Path
 import subprocess
 
-def converter():
+def home():
     window.destroy()
-    subprocess.run(["python", "converter.py"])
+    subprocess.run(["python", "main.py"])
 
 def settings():
     window.destroy()
     subprocess.run(["python", "settings.py"])
 
-username = getpass.getuser()
-
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
+
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path("home")
+ASSETS_PATH = OUTPUT_PATH / Path("assets/converter")
+
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+
 window = Tk()
-window.title("Netflix Cookie Checker - Home")
-
-img = PhotoImage(file='home/netflix.png')
-window.iconbitmap(default='home/netflix.png')
-
+window.title("Netflix Cookie Checker - Cookie Converter")
+# img = PhotoImage(file='assets/netflix.png')
+# window.iconphoto(False, img)
 window.geometry("1090x645+250+250")
-window.configure(bg="#FFFFFF")
+window.configure(bg = "#FFFFFF")
+
 
 canvas = Canvas(
     window,
-    bg="#FFFFFF",
-    height=645,
-    width=1090,
-    bd=0,
-    highlightthickness=0,
-    relief="ridge"
+    bg = "#FFFFFF",
+    height = 645,
+    width = 1090,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge"
 )
 
-canvas.place(x=0, y=0)
+canvas.place(x = 0, y = 0)
 image_image_1 = PhotoImage(
     file=relative_to_assets("image_1.png"))
 image_1 = canvas.create_image(
@@ -73,7 +72,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: webbrowser.open("https://netflix.com"),
+    command=lambda: print("button_1 clicked"),
     relief="flat"
 )
 button_1.place(
@@ -86,8 +85,8 @@ button_1.place(
 image_image_2 = PhotoImage(
     file=relative_to_assets("image_2.png"))
 image_2 = canvas.create_image(
-    370.0,
-    383.0,
+    341.0,
+    389.0,
     image=image_image_2
 )
 
@@ -97,7 +96,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('import cookies'),
+    command=lambda: print("import netscape cookies"),
     relief="flat"
 )
 button_2.place(
@@ -113,19 +112,19 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('start'),
+    command=lambda: print("start converting"),
     relief="flat"
 )
 button_3.place(
     x=184.0,
-    y=232.0,
+    y=247.0,
     width=230.0,
     height=60.0
 )
 
 canvas.create_text(
-    204.0,
-    342.0,
+    201.0,
+    356.0,
     anchor="nw",
     text="Output Path",
     fill="#000000",
@@ -133,20 +132,21 @@ canvas.create_text(
 )
 
 canvas.create_text(
-    204.0,
-    385.0,
+    201.0,
+    391.0,
     anchor="nw",
-    text="Select a folder",
+    text="FOLDER",
     fill="#000000",
     font=("SegoeFluentIcons", 20 * -1)
 )
+
 button_image_4 = PhotoImage(
     file=relative_to_assets("button_4.png"))
 button_4 = Button(
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("same"),
+    command=lambda: home(),
     relief="flat"
 )
 button_4.place(
@@ -192,7 +192,7 @@ canvas.create_text(
     195.0,
     29.0,
     anchor="nw",
-    text=f"Welcome {username}",
+    text="Welcome user",
     fill="#FFFFFF",
     font=("Segoe UI Variable", 40 * -1)
 )
@@ -203,7 +203,7 @@ button_7 = Button(
     image=button_image_7,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: converter(),
+    command=lambda: print("same"),
     relief="flat"
 )
 button_7.place(
@@ -211,32 +211,6 @@ button_7.place(
     y=249.0,
     width=77.0,
     height=77.0
-)
-
-image_image_3 = PhotoImage(
-    file=relative_to_assets("image_3.png"))
-image_3 = canvas.create_image(
-    833.0,
-    381.0,
-    image=image_image_3
-)
-
-canvas.create_text(
-    609.0,
-    161.0,
-    anchor="nw",
-    text="---------------",
-    fill="#000000",
-    font=("Segoe UI Variable", 12 * -1)
-)
-
-canvas.create_text(
-    595.0,
-    100.0,
-    anchor="nw",
-    text="Log",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
 )
 
 canvas.create_rectangle(
@@ -248,37 +222,19 @@ canvas.create_rectangle(
     outline="")
 
 canvas.create_text(
-    195.0,
-    503.0,
+    184.0,
+    521.0,
     anchor="nw",
-    text="Working Cookies :",
+    text="Cookies Converted:",
     fill="#FFFFFF",
     font=("Segoe UI Variable", 24 * -1)
 )
 
 canvas.create_text(
-    412.0,
-    504.0,
+    414.0,
+    521.0,
     anchor="nw",
     text="--",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
-)
-
-canvas.create_text(
-    400.0,
-    556.0,
-    anchor="nw",
-    text="--",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
-)
-
-canvas.create_text(
-    195.0,
-    555.0,
-    anchor="nw",
-    text="Expired Cookies :",
     fill="#FFFFFF",
     font=("Segoe UI Variable", 24 * -1)
 )
@@ -289,14 +245,40 @@ button_8 = Button(
     image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('output folder'),
+    command=lambda: print("output folder"),
     relief="flat"
 )
 button_8.place(
-    x=502.0,
-    y=377.0,
-    width=43.0,
-    height=43.0
+    x=438.4193420410156,
+    y=390.1693420410156,
+    width=36.29570007324219,
+    height=34.56182861328125
+)
+
+image_image_3 = PhotoImage(
+    file=relative_to_assets("image_3.png"))
+image_3 = canvas.create_image(
+    807.0,
+    373.0,
+    image=image_image_3
+)
+
+canvas.create_text(
+    554.0,
+    169.0,
+    anchor="nw",
+    text="---------------",
+    fill="#000000",
+    font=("Segoe UI Variable", 12 * -1)
+)
+
+canvas.create_text(
+    546.0,
+    104.0,
+    anchor="nw",
+    text="Log",
+    fill="#FFFFFF",
+    font=("Segoe UI Variable", 24 * -1)
 )
 window.resizable(False, False)
 window.mainloop()

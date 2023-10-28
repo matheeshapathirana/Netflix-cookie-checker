@@ -5,11 +5,11 @@ import subprocess
 
 def converter():
     window.destroy()
-    subprocess.run(["python", "assets/converter.py"])
+    subprocess.run(["python", "converter.py"])
 
 def settings():
     window.destroy()
-    subprocess.run(["python", "assets/settings.py"])
+    subprocess.run(["python", "settings.py"])
 
 username = getpass.getuser()
 
@@ -25,10 +25,8 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 window.title("Netflix Cookie Checker - Home")
-
-img = PhotoImage(file='assets/home/netflix.png')
-window.iconbitmap(default='assets/home/netflix.png')
-
+# img = PhotoImage(file='assets/netflix.png')
+# window.iconphoto(False, img)
 window.geometry("1090x645+250+250")
 window.configure(bg="#FFFFFF")
 

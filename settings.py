@@ -1,22 +1,20 @@
+import subprocess
 import webbrowser
 from pathlib import Path
-import subprocess
 
 def home():
     window.destroy()
-    subprocess.run(["python", "home.py"])
+    subprocess.run(["python", "main.py"])
 
-def settings():
+def converter():
     window.destroy()
-    subprocess.run(["python", "settings.py"])
+    subprocess.run(["python", "converter.py"])
 
-# from tkinter import *
-# Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path("converter")
+ASSETS_PATH = OUTPUT_PATH / Path("assets/settings")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -24,7 +22,10 @@ def relative_to_assets(path: str) -> Path:
 
 
 window = Tk()
-window.title("Netflix Cookie Checker - Cookie Converter")
+window.title("Netflix Cookie Checker - Settings")
+# img = PhotoImage(file='assets/netflix.png')
+# window.iconphoto(False, img)
+
 window.geometry("1090x645+250+250")
 window.configure(bg = "#FFFFFF")
 
@@ -80,28 +81,20 @@ button_1.place(
     height=87.0
 )
 
-image_image_2 = PhotoImage(
-    file=relative_to_assets("image_2.png"))
-image_2 = canvas.create_image(
-    341.0,
-    389.0,
-    image=image_image_2
-)
-
 button_image_2 = PhotoImage(
     file=relative_to_assets("button_2.png"))
 button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("import netscape cookies"),
+    command=lambda: print('enable disable'),
     relief="flat"
 )
 button_2.place(
-    x=184.0,
-    y=132.0,
-    width=230.0,
-    height=60.0
+    x=400.0,
+    y=148.0,
+    width=134.0,
+    height=44.0
 )
 
 button_image_3 = PhotoImage(
@@ -110,32 +103,14 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("start converting"),
+    command=lambda: window.destroy(),
     relief="flat"
 )
 button_3.place(
-    x=184.0,
-    y=247.0,
-    width=230.0,
-    height=60.0
-)
-
-canvas.create_text(
-    201.0,
-    356.0,
-    anchor="nw",
-    text="Output Path",
-    fill="#000000",
-    font=("SegoeFluentIcons", 20 * -1)
-)
-
-canvas.create_text(
-    201.0,
-    391.0,
-    anchor="nw",
-    text="FOLDER",
-    fill="#000000",
-    font=("SegoeFluentIcons", 20 * -1)
+    x=195.0,
+    y=574.0,
+    width=134.0,
+    height=44.0
 )
 
 button_image_4 = PhotoImage(
@@ -144,14 +119,14 @@ button_4 = Button(
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: home(),
+    command=lambda: print("reset"),
     relief="flat"
 )
 button_4.place(
-    x=42.0,
-    y=140.0,
-    width=77.0,
-    height=77.0
+    x=354.0,
+    y=574.0,
+    width=134.0,
+    height=44.0
 )
 
 button_image_5 = PhotoImage(
@@ -160,14 +135,23 @@ button_5 = Button(
     image=button_image_5,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: settings(),
+    command=lambda: webbrowser.open("https://github.com/matheeshapathirana/Netflix-cookie-checker"),
     relief="flat"
 )
 button_5.place(
-    x=42.0,
-    y=357.0,
-    width=77.0,
-    height=77.0
+    x=513.0,
+    y=574.0,
+    width=134.0,
+    height=44.0
+)
+
+canvas.create_text(
+    195.0,
+    160.0,
+    anchor="nw",
+    text="Use Minimized",
+    fill="#FFFFFF",
+    font=("SegoeFluentIcons", 20 * -1)
 )
 
 button_image_6 = PhotoImage(
@@ -176,10 +160,42 @@ button_6 = Button(
     image=button_image_6,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: webbrowser.open("https://discord.com/invite/RSCdKeKB5X"),
+    command=lambda: home(),
     relief="flat"
 )
 button_6.place(
+    x=42.0,
+    y=140.0,
+    width=77.0,
+    height=77.0
+)
+
+button_image_7 = PhotoImage(
+    file=relative_to_assets("button_7.png"))
+button_7 = Button(
+    image=button_image_7,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: print('same'),
+    relief="flat"
+)
+button_7.place(
+    x=42.0,
+    y=357.0,
+    width=77.0,
+    height=77.0
+)
+
+button_image_8 = PhotoImage(
+    file=relative_to_assets("button_8.png"))
+button_8 = Button(
+    image=button_image_8,
+    borderwidth=0,
+    highlightthickness=0,
+    command=lambda: webbrowser.open("https://discord.com/invite/RSCdKeKB5X"),
+    relief="flat"
+)
+button_8.place(
     x=42.0,
     y=466.0,
     width=77.0,
@@ -195,16 +211,16 @@ canvas.create_text(
     font=("Segoe UI Variable", 40 * -1)
 )
 
-button_image_7 = PhotoImage(
-    file=relative_to_assets("button_7.png"))
-button_7 = Button(
-    image=button_image_7,
+button_image_9 = PhotoImage(
+    file=relative_to_assets("button_9.png"))
+button_9 = Button(
+    image=button_image_9,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("same"),
+    command=lambda: converter(),
     relief="flat"
 )
-button_7.place(
+button_9.place(
     x=42.0,
     y=249.0,
     width=77.0,
@@ -218,65 +234,5 @@ canvas.create_rectangle(
     645.0,
     fill="#252525",
     outline="")
-
-canvas.create_text(
-    184.0,
-    521.0,
-    anchor="nw",
-    text="Cookies Converted:",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
-)
-
-canvas.create_text(
-    414.0,
-    521.0,
-    anchor="nw",
-    text="--",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
-)
-
-button_image_8 = PhotoImage(
-    file=relative_to_assets("button_8.png"))
-button_8 = Button(
-    image=button_image_8,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("output folder"),
-    relief="flat"
-)
-button_8.place(
-    x=438.4193420410156,
-    y=390.1693420410156,
-    width=36.29570007324219,
-    height=34.56182861328125
-)
-
-image_image_3 = PhotoImage(
-    file=relative_to_assets("image_3.png"))
-image_3 = canvas.create_image(
-    807.0,
-    373.0,
-    image=image_image_3
-)
-
-canvas.create_text(
-    554.0,
-    169.0,
-    anchor="nw",
-    text="---------------",
-    fill="#000000",
-    font=("Segoe UI Variable", 12 * -1)
-)
-
-canvas.create_text(
-    546.0,
-    104.0,
-    anchor="nw",
-    text="Log",
-    fill="#FFFFFF",
-    font=("Segoe UI Variable", 24 * -1)
-)
 window.resizable(False, False)
 window.mainloop()

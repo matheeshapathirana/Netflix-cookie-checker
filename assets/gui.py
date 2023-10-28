@@ -23,7 +23,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 def home():
     OUTPUT_PATH = Path(__file__).parent
-    ASSETS_PATH = OUTPUT_PATH / Path("assets/home")
+    ASSETS_PATH = OUTPUT_PATH / Path("home")
 
     def import_cookies():
         global import_folder
@@ -90,8 +90,8 @@ def home():
     window = Tk()
     window.title("Netflix Cookie Checker")
 
-    img = PhotoImage(file='assets/home/netflix.png')
-    window.iconbitmap(default='assets/home/netflix.png')
+    img = PhotoImage(file='home/netflix.png')
+    window.iconbitmap(default='home/netflix.png')
 
     window.geometry("1090x645")
     window.configure(bg="#FFFFFF")
