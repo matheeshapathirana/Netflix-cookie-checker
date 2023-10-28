@@ -1,88 +1,17 @@
-import json
-import os
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
-from PIL import Image, ImageTk
-from converter import converter
-converter = converter()
-
-if os.name == 'posix':
-    print("This program doesn't support linux OS.")
-
-import tkinter
-from tkinter import filedialog
-import webbrowser
-from pathlib import Path
-import getpass
-
-username = getpass.getuser()
-# from tkinter import *
-# Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
 def home():
+    import converter
+    from pathlib import Path
+    import getpass
+    import webbrowser
+
+    username = getpass.getuser()
+
+    # from tkinter import *
+    # Explicit imports to satisfy Flake8
+    from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+
     OUTPUT_PATH = Path(__file__).parent
     ASSETS_PATH = OUTPUT_PATH / Path("assets/home")
-
-    def import_cookies():
-        global import_folder
-        tkinter.Tk().withdraw()
-        import_folder = filedialog.askdirectory()
-
-    def output_folder():
-        global output_folder
-        tkinter.Tk().withdraw()
-        output_folder = filedialog.askdirectory()
-
-    output_path = ""
-
-    def start():
-        def load_cookies_from_json(FILEPATH):
-            with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
-                cookie = json.load(cookie_file)
-            return cookie
-
-        def open_webpage_with_cookies(URL, COOKIES):
-            firefox_options = Options()
-            firefox_options.add_argument("--headless")
-            driver = webdriver.Firefox(options=firefox_options)
-            driver.get(URL)
-
-            for cookie in COOKIES:
-                driver.add_cookie(cookie)
-
-            driver.refresh()
-
-            if driver.find_elements(By.CSS_SELECTOR, ".btn"):
-                print(f"Cookie Not working - {filename}")
-                driver.quit()
-            else:
-                print(f"Working cookie found! - {filename}")
-                try:
-                    os.mkdir(output_folder)
-                    with open(f"{output_folder}/{filename})", "w", encoding="utf-8") as a:
-                        a.write(content)
-                    driver.quit()
-
-                except FileExistsError:
-                    with open(f"{output_folder}/{filename}", "w", encoding="utf-8") as a:
-                        a.write(content)
-                    driver.quit()
-
-        for filename in os.listdir(import_cookies):
-            filepath = os.path.join(f"{import_cookies}", filename)
-            if os.path.isfile(filepath):
-                with open(filepath, "r", encoding="utf-8") as file:
-                    content = file.read()
-
-                    url = "https://netflix.com/login"
-
-                    try:
-                        cookies = load_cookies_from_json(filepath)
-                        open_webpage_with_cookies(url, cookies)
-                    except Exception as e:
-                        print(f"Error occurred: {str(e)} - {filename}\n")
 
     def relative_to_assets(path: str) -> Path:
         return ASSETS_PATH / Path(path)
@@ -161,7 +90,7 @@ def home():
         image=button_image_2,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: import_cookies(),
+        command=lambda: print('import cookies'),
         relief="flat"
     )
     button_2.place(
@@ -177,7 +106,7 @@ def home():
         image=button_image_3,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: start(),
+        command=lambda: print('start'),
         relief="flat"
     )
     button_3.place(
@@ -267,7 +196,7 @@ def home():
         image=button_image_7,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: help,
+        command=lambda: converter.converter(),
         relief="flat"
     )
     button_7.place(
@@ -353,7 +282,7 @@ def home():
         image=button_image_8,
         borderwidth=0,
         highlightthickness=0,
-        command=lambda: output_folder(),
+        command=lambda: print('output folder'),
         relief="flat"
     )
     button_8.place(
@@ -364,6 +293,3 @@ def home():
     )
     window.resizable(False, False)
     window.mainloop()
-
-
-home()
