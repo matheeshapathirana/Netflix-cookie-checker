@@ -1,3 +1,8 @@
+import os
+
+if os.name=='posix':
+    print("This program doesn't support linux OS.")
+
 import tkinter
 from tkinter import filedialog
 import webbrowser
@@ -26,10 +31,11 @@ def relative_to_assets(path: str) -> Path:
 
 
 window = Tk()
-window.title("Tkinter Designer")
+window.title("Netflix Cookie Checker")
 
 img = PhotoImage(file='assets/frame0/netflix.png')
 window.iconphoto(False, img)
+window.iconbitmap(default='assets/frame0/netflix.png')
 
 window.geometry("1090x645")
 window.configure(bg = "#FFFFFF")
@@ -139,11 +145,10 @@ canvas.create_text(
     204.0,
     385.0,
     anchor="nw",
-    text="FOLDER",
+    text="Select a folder",
     fill="#000000",
     font=("SegoeFluentIcons", 20 * -1)
 )
-
 button_image_4 = PhotoImage(
     file=relative_to_assets("button_4.png"))
 button_4 = Button(
