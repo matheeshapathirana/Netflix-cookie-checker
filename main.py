@@ -2,26 +2,106 @@ from pathlib import Path
 import getpass
 import webbrowser
 import subprocess
+import json
+import os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
+import tkinter
+from tkinter import filedialog, Tk, Canvas, Entry, Text, Button, PhotoImage
+
+working_cookies_path = "working_cookies"
+
+
+def import_folder():
+    global import_folder_path
+    tkinter.Tk().withdraw()
+    import_folder_path = filedialog.askdirectory()
+    if import_folder_path == "":
+        import_folder_path = "json_cookies"
+        print("Using default path")
+    else:
+        print(f"Using path: {import_folder_path}")
+
+
+def output_folder():
+    global output_folder_path
+    tkinter.Tk().withdraw()
+    output_folder_path = filedialog.askdirectory()
+    if output_folder_path == "":
+        output_folder_path = "json_cookies"
+        print("Using default path")
+    else:
+        print(f"Using path: {output_folder_path}")
+
+
+def start():
+    def load_cookies_from_json(FILEPATH):
+        with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
+            cookie = json.load(cookie_file)
+        return cookie
+
+    def open_webpage_with_cookies(URL, COOKIES):
+        firefox_options = Options()
+        firefox_options.add_argument("--headless")
+        driver = webdriver.Firefox(options=firefox_options)
+        driver.get(URL)
+
+        for cookie in COOKIES:
+            driver.add_cookie(cookie)
+
+        driver.refresh()
+
+        if driver.find_elements(By.CSS_SELECTOR, ".btn"):
+            print(f"Cookie Not working - {filename}")
+            driver.quit()
+        else:
+            print(f"Working cookie found! - {filename}")
+            try:
+                os.mkdir(output_folder_path)
+                with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
+                    a.write(content)
+                driver.quit()
+
+            except FileExistsError:
+                with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
+                    a.write(content)
+                driver.quit()
+
+    for filename in os.listdir(import_folder_path):
+        filepath = os.path.join(import_folder_path, filename)
+        if os.path.isfile(filepath):
+            with open(filepath, "r", encoding="utf-8") as file:
+                content = file.read()
+
+                url = "https://netflix.com/login"
+
+                try:
+                    cookies = load_cookies_from_json(filepath)
+                    open_webpage_with_cookies(url, cookies)
+                except Exception as e:
+                    print(f"Error occurred: {str(e)} - {filename}\n")
+
 
 def converter():
     window.destroy()
     subprocess.run(["python", "converter.py"])
 
+
 def settings():
     window.destroy()
     subprocess.run(["python", "settings.py"])
 
-username = getpass.getuser()
 
-# from tkinter import *
-# Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+username = getpass.getuser()
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("assets/home")
 
+
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
 
 window = Tk()
 window.title("Netflix Cookie Checker - Home")
@@ -95,7 +175,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('import cookies'),
+    command=lambda: import_folder(),
     relief="flat"
 )
 button_2.place(
@@ -111,7 +191,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('start'),
+    command=lambda: start(),
     relief="flat"
 )
 button_3.place(
@@ -287,7 +367,7 @@ button_8 = Button(
     image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print('output folder'),
+    command=lambda: output_folder(),
     relief="flat"
 )
 button_8.place(
