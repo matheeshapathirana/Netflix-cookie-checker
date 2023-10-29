@@ -15,7 +15,7 @@ else:
         tkinter.Tk().withdraw()
         folder_path = filedialog.askdirectory()
         if folder_path == "":
-            print("Using default folder 'cookies'")
+            print("Trying to use default folder 'cookies'\n")
             folder_path = "cookies"
             break
 
@@ -48,18 +48,22 @@ def convert_netscape_cookie_to_json(cookie_file_content):
 path = "json_cookies"
 try:
     os.mkdir(path)
-    print(f"Folder {path} created!")
-    for filename in os.listdir(folder_path):
-        filepath = os.path.join(folder_path, filename)
-        if os.path.isfile(filepath):
-            with open(filepath, "r", encoding="utf-8") as file:
-                content = file.read()
+    print(f"Folder {path} created!\n")
+    try:
+        for filename in os.listdir(folder_path):
+            filepath = os.path.join(folder_path, filename)
+            if os.path.isfile(filepath):
+                with open(filepath, "r", encoding="utf-8") as file:
+                    content = file.read()
 
-            json_data = convert_netscape_cookie_to_json(content)
+                json_data = convert_netscape_cookie_to_json(content)
 
-            with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
-                f.write(json_data)
-                print(f"{filename} - DONE!")
+                with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
+                    f.write(json_data)
+                    print(f"{filename} - DONE!")
+    except FileNotFoundError:
+        print("Error Occurred :Default 'cookies' folder not found, please select a valid folder")
+        os.rmdir(path)
 
 except FileExistsError:
     if (
