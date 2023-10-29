@@ -14,9 +14,12 @@ else:
         print("\n<<< Select Netscape cookies folder >>>\n\n")
         tkinter.Tk().withdraw()
         folder_path = filedialog.askdirectory()
-        if folder_path != "":
+        if folder_path == "":
             print("Using default folder 'cookies'")
             folder_path = "cookies"
+            break
+
+        else:
             break
 
 rand_number = random.randint(1, 99999)
