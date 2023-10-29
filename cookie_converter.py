@@ -62,7 +62,9 @@ try:
                     f.write(json_data)
                     print(f"{filename} - DONE!")
     except FileNotFoundError:
-        print("Error Occurred :Default 'cookies' folder not found, please select a valid folder")
+        print(
+            "Error Occurred :Default 'cookies' folder not found, please select a valid folder"
+        )
         os.rmdir(path)
 
 except FileExistsError:
