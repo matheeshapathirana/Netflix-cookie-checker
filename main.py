@@ -5,34 +5,32 @@ import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
-import tkinter
 from tkinter import filedialog, Tk, Canvas, Entry, Text, Button, PhotoImage
+import tkinter.messagebox
 import json
 import os
-
 
 import_folder_path = ""
 output_folder_path = ""
 working_cookies_path = "working_cookies"
-
 
 def import_folder():
     global import_folder_path
     tkinter.Tk().withdraw()
     import_folder_path = filedialog.askdirectory()
 
-
 def output_folder():
     global output_folder_path
     tkinter.Tk().withdraw()
     output_folder_path = filedialog.askdirectory()
-
 
 def check():
     if not import_folder_path:
         tkinter.messagebox.showerror(
             title="Invalid cookie Folder", message="Please select a valid folder to import cookies")
         return
+
+
 
     if not output_folder_path:
         tkinter.messagebox.showerror(

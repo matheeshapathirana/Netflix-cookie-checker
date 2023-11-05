@@ -1,18 +1,111 @@
+import json
+import os
+import random
+import shutil
+import subprocess
 import webbrowser
 from pathlib import Path
-import subprocess
+import tkinter
+from tkinter import filedialog, Tk, Canvas, Entry, Text, Button, PhotoImage
+
+input_folder = ""
+output_folder = ""
+
+
+def import_cookies():
+    global input_folder
+    while True:
+        import tkinter
+        from tkinter import filedialog
+        tkinter.Tk().withdraw()
+        input_folder = filedialog.askdirectory()
+        if input_folder == "":
+            print("Trying to use default folder 'cookies'\n")
+            input_folder = "cookies"
+            break
+        break
+
+
+def output_cookies():
+    global output_folder
+    while True:
+        import tkinter
+        from tkinter import filedialog
+        tkinter.Tk().withdraw()
+        output_folder = filedialog.askdirectory()
+        if output_folder == "":
+            print("Trying to use default export folder 'json_cookies'\n")
+            output_folder = "json_cookies"
+            break
+        break
+
+
+def check():
+    if not input_folder:
+        tkinter.messagebox.showerror(
+            title="Invalid cookie Folder", message="Please select a valid folder to import cookies")
+        return
+
+    if not output_folder:
+        tkinter.messagebox.showerror(
+            title="Invalid output Folder", message="Please select a valid folder to export cookies")
+        return
+
+    else:
+        start()
+
+
+def start():
+    rand_number = random.randint(1, 99999)
+
+    if input_folder == '':
+        window.messagebox.showerror(
+            title="Invalid Folder", message="Please select a valid folder to import cookies")
+        import_cookies()
+
+    def convert_netscape_cookie_to_json(cookie_file_content):
+        cookies = []
+        for line in cookie_file_content.splitlines():
+            fields = line.strip().split("\t")
+            if len(fields) >= 7:
+                cookie = {
+                    "domain": fields[0].replace("www", ""),
+                    "flag": fields[1],
+                    "path": fields[2],
+                    "secure": fields[3] == "TRUE",
+                    "expiration": fields[4],
+                    "name": fields[5],
+                    "value": fields[6],
+                }
+                cookies.append(cookie)
+
+        JSON_DATA = json.dumps(cookies, indent=4)
+        return JSON_DATA
+
+    path = output_folder
+
+    for filename in os.listdir(input_folder):
+        filepath = os.path.join(input_folder, filename)
+        if os.path.isfile(filepath):
+            with open(filepath, "r", encoding="utf-8") as file:
+                content = file.read()
+
+            json_data = convert_netscape_cookie_to_json(content)
+
+            with open(f"{output_folder}/{filename}", "w", encoding="utf-8") as f:
+                f.write(json_data)
+                print(f"{filename} - DONE!")
+
+    tkinter.messagebox.showinfo(title="Conversion Completed", message="Conversion completed successfully!")
 
 def home():
     window.destroy()
     subprocess.run(["python", "main.py"])
 
+
 def settings():
     window.destroy()
     subprocess.run(["python", "settings.py"])
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -28,20 +121,19 @@ window.title("Netflix Cookie Checker - Cookie Converter")
 # img = PhotoImage(file='assets/netflix.png')
 # window.iconphoto(False, img)
 window.geometry("1090x645+250+250")
-window.configure(bg = "#FFFFFF")
-
+window.configure(bg="#FFFFFF")
 
 canvas = Canvas(
     window,
-    bg = "#FFFFFF",
-    height = 645,
-    width = 1090,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
+    bg="#FFFFFF",
+    height=645,
+    width=1090,
+    bd=0,
+    highlightthickness=0,
+    relief="ridge"
 )
 
-canvas.place(x = 0, y = 0)
+canvas.place(x=0, y=0)
 image_image_1 = PhotoImage(
     file=relative_to_assets("image_1.png"))
 image_1 = canvas.create_image(
@@ -96,7 +188,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("import netscape cookies"),
+    command=lambda: import_cookies(),
     relief="flat"
 )
 button_2.place(
@@ -112,7 +204,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("start converting"),
+    command=lambda: check(),
     relief="flat"
 )
 button_3.place(
@@ -135,7 +227,7 @@ canvas.create_text(
     201.0,
     391.0,
     anchor="nw",
-    text="FOLDER",
+    text="Select a folder",
     fill="#000000",
     font=("SegoeFluentIcons", 20 * -1)
 )
@@ -245,7 +337,7 @@ button_8 = Button(
     image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("output folder"),
+    command=lambda: output_cookies(),
     relief="flat"
 )
 button_8.place(
