@@ -28,3 +28,6 @@
 ## [Try colab-version](https://github.com/matheeshapathirana/Netflix-cookie-checker/tree/colab-version)
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
+
+## You can help me by Donating
+[![BuyMeACoffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/matheesha) 
