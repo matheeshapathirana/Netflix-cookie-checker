@@ -8,6 +8,22 @@
 ![Logo](images/netflix_logo.jpg)
 
 
+<p align= "center">
+   <img src="https://img.shields.io/github/languages/top/matheeshapathirana/Netflix-cookie-checker">
+   <img src="https://img.shields.io/github/stars/matheeshapathirana/Netflix-cookie-checker">
+   <img src="https://img.shields.io/github/forks/matheeshapathirana/Netflix-cookie-checker">
+   <br>
+   <img src="https://img.shields.io/github/last-commit/matheeshapathirana/Netflix-cookie-checker">
+   <img src="https://img.shields.io/github/license/matheeshapathirana/Netflix-cookie-checker">
+   <br>
+   <img src="https://img.shields.io/github/issues/matheeshapathirana/Netflix-cookie-checker">
+   <img src="https://img.shields.io/github/issues-closed/matheeshapathirana/Netflix-cookie-checker">
+   <br>
+   <br>
+   <img src="https://repobeats.axiom.co/api/embed/97888767d68bc2104aed23c14f34d310822b4bc8.svg">
+</p>
+
+
 # Installation
 
 ```cmd
@@ -29,5 +45,5 @@
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
 
-## You can help me by Donating
+# You can help me by Donating
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matheeshapathirana)
