@@ -3,8 +3,7 @@
 
 **Checks Cookies for validity.**
 
-**Education purpose only.*
-
+**Education purpose only.*<br><br>
 ![Logo](images/netflix_logo.jpg)
 
 
@@ -18,6 +17,7 @@
    <br>
    <img src="https://img.shields.io/github/issues/matheeshapathirana/Netflix-cookie-checker">
    <img src="https://img.shields.io/github/issues-closed/matheeshapathirana/Netflix-cookie-checker">
+   <img src ="https://hits.dwyl.com/matheeshapathirana/Netflix-cookie-checker.svg">
    <br>
    <br>
    <img src="https://repobeats.axiom.co/api/embed/97888767d68bc2104aed23c14f34d310822b4bc8.svg">
@@ -44,6 +44,10 @@
 ## [Try colab-version](https://github.com/matheeshapathirana/Netflix-cookie-checker/tree/colab-version)
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
+
+# Contributors
+![GitHub Contributors Image](https://contrib.rocks/image?repo=matheeshapathirana/Netflix-cookie-checker)
+ 
 
 # You can help me by Donating
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matheeshapathirana)
