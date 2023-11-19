@@ -30,13 +30,13 @@ def load_cookies_from_json(json_cookies_path):
     return cookie
 
 
-def open_webpage_with_cookies(link, cookie):
+def open_webpage_with_cookies(link, json_cookies):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
     driver.get(link)
 
-    for cookie in cookie:
+    for cookie in json_cookies:
         driver.add_cookie(cookie)
 
     driver.refresh()
