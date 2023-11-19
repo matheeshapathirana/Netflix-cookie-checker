@@ -41,8 +41,8 @@ def convert_netscape_cookie_to_json(cookie_file_content):
             }
             cookies.append(cookie)
 
-    JSON_DATA = json.dumps(cookies, indent=4)
-    return JSON_DATA
+    json_content = json.dumps(cookies, indent=4)
+    return json_content
 
 
 path = "json_cookies"

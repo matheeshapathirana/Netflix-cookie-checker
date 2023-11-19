@@ -24,19 +24,19 @@ else:
             print(f"Using path: {folder_path}")
 
 
-def load_cookies_from_json(FILEPATH):
-    with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
+def load_cookies_from_json(json_cookies_path):
+    with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
         cookie = json.load(cookie_file)
     return cookie
 
 
-def open_webpage_with_cookies(URL, COOKIES):
+def open_webpage_with_cookies(link, cookie):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
-    driver.get(URL)
+    driver.get(link)
 
-    for cookie in COOKIES:
+    for cookie in cookie:
         driver.add_cookie(cookie)
 
     driver.refresh()
