@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import config
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,7 +9,13 @@ from selenium.webdriver.firefox.options import Options
 working_cookies_path = "working_cookies"
 
 if os.name == "posix":
-    folder_path = "json_cookies"
+    try:
+        folder_path = "json_cookies"
+        os.path.isdir(folder_path)
+    except FileNotFoundError:
+        print("Error Occurred :Default 'json_cookies' folder not found, please run cookie_converter.py first")
+        sys.exit()
+
 
 else:
     import tkinter
@@ -24,19 +31,19 @@ else:
             print(f"Using path: {folder_path}")
 
 
-def load_cookies_from_json(FILEPATH):
-    with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
+def load_cookies_from_json(json_cookies_path):
+    with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
         cookie = json.load(cookie_file)
     return cookie
 
 
-def open_webpage_with_cookies(URL, COOKIES):
+def open_webpage_with_cookies(link, json_cookies):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
-    driver.get(URL)
+    driver.get(link)
 
-    for cookie in COOKIES:
+    for cookie in json_cookies:
         driver.add_cookie(cookie)
 
     driver.refresh()
@@ -73,6 +80,6 @@ for filename in os.listdir("json_cookies"):
             except json.decoder.JSONDecodeError:
                 print("Please use cookie_converter.py to convert your cookies to json format\n")
                 break
-                
+
             except Exception as e:
                 print(f"Error occurred: {str(e)} - {filename}\n")
