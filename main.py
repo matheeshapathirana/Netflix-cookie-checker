@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import config
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,6 +10,12 @@ working_cookies_path = "working_cookies"
 
 if os.name == "posix":
     folder_path = "json_cookies"
+    if not os.path.isdir(folder_path):
+        print(
+            "Error Occurred :Default 'json_cookies' folder not found, please run cookie_converter.py first"
+        )
+        sys.exit()
+
 
 else:
     import tkinter
@@ -69,5 +76,12 @@ for filename in os.listdir("json_cookies"):
             try:
                 cookies = load_cookies_from_json(filepath)
                 open_webpage_with_cookies(url, cookies)
+
+            except json.decoder.JSONDecodeError:
+                print(
+                    "Please use cookie_converter.py to convert your cookies to json format\n"
+                )
+                break
+
             except Exception as e:
                 print(f"Error occurred: {str(e)} - {filename}\n")
