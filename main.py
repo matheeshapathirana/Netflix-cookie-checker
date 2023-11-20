@@ -24,19 +24,19 @@ else:
             print(f"Using path: {folder_path}")
 
 
-def load_cookies_from_json(json_cookies_path):
-    with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
+def load_cookies_from_json(FILEPATH):
+    with open(FILEPATH, "r", encoding="utf-8") as cookie_file:
         cookie = json.load(cookie_file)
     return cookie
 
 
-def open_webpage_with_cookies(link, json_cookies):
+def open_webpage_with_cookies(URL, COOKIES):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
-    driver.get(link)
+    driver.get(URL)
 
-    for cookie in json_cookies:
+    for cookie in COOKIES:
         driver.add_cookie(cookie)
 
     driver.refresh()
@@ -69,5 +69,10 @@ for filename in os.listdir("json_cookies"):
             try:
                 cookies = load_cookies_from_json(filepath)
                 open_webpage_with_cookies(url, cookies)
+
+            except json.decoder.JSONDecodeError:
+                print("Please use cookie_converter.py to convert your cookies to json format\n")
+                break
+                
             except Exception as e:
                 print(f"Error occurred: {str(e)} - {filename}\n")
