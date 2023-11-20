@@ -9,10 +9,8 @@ from selenium.webdriver.firefox.options import Options
 working_cookies_path = "working_cookies"
 
 if os.name == "posix":
-    try:
-        folder_path = "json_cookies"
-        os.path.isdir(folder_path)
-    except FileNotFoundError:
+    folder_path = "json_cookies"
+    if not os.path.isdir(folder_path):
         print("Error Occurred :Default 'json_cookies' folder not found, please run cookie_converter.py first")
         sys.exit()
 
