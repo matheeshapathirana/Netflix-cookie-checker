@@ -13,7 +13,8 @@
 
    ![Upload](images/upload.png)
 3. Run Install requirements cell.
-4. Run start cookie checker cell.
+4. Run cookies converter cell.
+5. Run start cookie checker cell.
 
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
