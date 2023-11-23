@@ -17,3 +17,6 @@
 
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
+
+# You can help me by Donating
+  [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matheeshapathirana)
