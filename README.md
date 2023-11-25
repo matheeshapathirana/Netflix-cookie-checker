@@ -3,7 +3,7 @@
 
 **Checks Cookies for validity.**
 
-**Education purpose only.*<br><br>
+*<b>Education purpose only.</b>*<br><br>
 ![Logo](images/netflix_logo.jpg)
 
 
