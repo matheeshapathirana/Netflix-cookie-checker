@@ -308,7 +308,7 @@ canvas.create_text(
     609.0,
     161.0,
     anchor="nw",
-    text="---------------",
+    text="Coming Soon",
     fill="#000000",
     font=("Segoe UI Variable", 12 * -1)
 )
