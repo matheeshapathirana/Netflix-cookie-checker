@@ -26,7 +26,8 @@ def open_webpage_with_cookies(URL, COOKIES):
     driver.refresh()
     driver.get_cookies()
 
-    if driver.find_elements(By.CSS_SELECTOR, ".btn"):
+    if driver.find_elements(By.CSS_SELECTOR, ".btn") or driver.find_elements(
+            By.CSS_SELECTOR, ".e1ax5wel1"):
         print(f"Cookie Not working - {filename}")
         driver.quit()
     else:
