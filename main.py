@@ -39,7 +39,7 @@ def load_cookies_from_json(json_cookies_path):
 
 def open_webpage_with_cookies(link, json_cookies):
     firefox_options = Options()
-    # firefox_options.add_argument("--headless")
+    firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
     driver.get(link)
 
