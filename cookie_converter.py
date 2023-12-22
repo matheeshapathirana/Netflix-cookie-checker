@@ -26,10 +26,10 @@ else:
 
 
 def maximum():
-    COUNT = 0
-    for root_dir, cur_dir, files in os.walk(folder_path):
-        COUNT += len(files)
-        return COUNT
+    count = 0
+    for files in os.walk(folder_path):
+        count += len(files)
+        return count
 
 
 rand_number = random.randint(1, 99999)
