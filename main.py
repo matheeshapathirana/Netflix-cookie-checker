@@ -34,7 +34,7 @@ else:
         else:
             print(f"Using path: {folder_path}")
 
-            
+
 def maximum():
     count = 0
     for root_dir, cur_dir, files in os.walk(r"json_cookies"):
