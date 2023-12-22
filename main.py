@@ -36,7 +36,7 @@ else:
 
 def maximum():
     COUNT = 0
-    for root_dir, cur_dir, files in os.walk(r'json_cookies'):
+    for root_dir, cur_dir, files in os.walk(r"json_cookies"):
         COUNT += len(files)
         return COUNT
 
@@ -67,7 +67,7 @@ def open_webpage_with_cookies(link, json_cookies):
     progress += 1
 
     if driver.find_elements(By.CSS_SELECTOR, ".btn") or driver.find_elements(
-            By.CSS_SELECTOR, ".e1ax5wel1"
+        By.CSS_SELECTOR, ".e1ax5wel1"
     ):
         print(f"Cookie Not working - {filename}")
         driver.quit()
@@ -109,4 +109,5 @@ for filename in os.listdir("json_cookies"):
                 exceptions += 1
 pbar.finish()
 print(
-    f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}")
+    f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}"
+)

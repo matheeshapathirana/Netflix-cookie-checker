@@ -85,10 +85,10 @@ try:
 
 except FileExistsError:
     if (
-            input(
-                "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n > : "
-            )
-            == "y"
+        input(
+            "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n > : "
+        )
+        == "y"
     ):
         shutil.rmtree(path)
         os.mkdir(path)
