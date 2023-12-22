@@ -10,6 +10,7 @@ from progressbar import ProgressBar
 working_cookies_path = "working_cookies"
 exceptions = 0
 working_cookies = 0
+expired_cookies = 0
 
 if os.name == "posix":
     folder_path = "json_cookies"
@@ -54,6 +55,7 @@ def load_cookies_from_json(json_cookies_path):
 def open_webpage_with_cookies(link, json_cookies):
     global progress
     global working_cookies
+    global expired_cookies
     firefox_options = Options()
     firefox_options.add_argument("--headless")
     driver = webdriver.Firefox(options=firefox_options)
@@ -71,6 +73,7 @@ def open_webpage_with_cookies(link, json_cookies):
     ):
         print(f"Cookie Not working - {filename}")
         driver.quit()
+        expired_cookies += 1
     else:
         print(f"Working cookie found! - {filename}")
         try:
@@ -78,6 +81,7 @@ def open_webpage_with_cookies(link, json_cookies):
             with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
                 a.write(content)
             driver.quit()
+            working_cookies += 1
 
         except FileExistsError:
             with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
@@ -102,6 +106,7 @@ for filename in os.listdir("json_cookies"):
                 print(
                     f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
                 )
+                exceptions += 1
                 break
 
             except Exception as e:
