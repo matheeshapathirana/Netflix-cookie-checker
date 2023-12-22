@@ -3,6 +3,8 @@ import os
 import random
 import shutil
 
+from progressbar import ProgressBar
+
 if os.name == "posix":
     folder_path = "cookies"
 
@@ -22,7 +24,18 @@ else:
         else:
             break
 
+
+def maximum():
+    COUNT = 0
+    for root_dir, cur_dir, files in os.walk(folder_path):
+        COUNT += len(files)
+        return COUNT
+
+
 rand_number = random.randint(1, 99999)
+
+progress = 0
+pbar = ProgressBar(maxval=maximum()).start()
 
 
 def convert_netscape_cookie_to_json(cookie_file_content):
@@ -61,6 +74,9 @@ try:
                 with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
                     f.write(json_data)
                     print(f"{filename} - DONE!")
+                    pbar.update(progress)
+                    progress += 1
+        # pbar.finish()
     except FileNotFoundError:
         print(
             "Error Occurred :Default 'cookies' folder not found, please select a valid folder"
@@ -69,10 +85,10 @@ try:
 
 except FileExistsError:
     if (
-        input(
-            "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n > : "
-        )
-        == "y"
+            input(
+                "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n > : "
+            )
+            == "y"
     ):
         shutil.rmtree(path)
         os.mkdir(path)
@@ -103,3 +119,4 @@ except FileExistsError:
                     print(f"{filename} - DONE!")
 
         print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
+pbar.finish()
