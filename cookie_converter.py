@@ -25,19 +25,16 @@ try:
             else:
                 break
 
-
     def maximum():
         count = 0
         for files in os.walk(folder_path):
             count += len(files)
             return count
 
-
     rand_number = random.randint(1, 99999)
 
     progress = 0
     pbar = progressbar.ProgressBar(maxval=maximum())
-
 
     def convert_netscape_cookie_to_json(cookie_file_content):
         cookies = []
@@ -57,7 +54,6 @@ try:
 
         json_content = json.dumps(cookies, indent=4)
         return json_content
-
 
     path = "json_cookies"
     try:
@@ -124,7 +120,9 @@ try:
 
                     json_data = convert_netscape_cookie_to_json(content)
 
-                    with open(f"temp {rand_number}/{filename}", "w", encoding="utf-8") as f:
+                    with open(
+                        f"temp {rand_number}/{filename}", "w", encoding="utf-8"
+                    ) as f:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
                         if 0 <= progress <= maximum():
