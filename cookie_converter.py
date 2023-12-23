@@ -135,6 +135,7 @@ try:
                             pass
 
             print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
+    pbar.finish()
 
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")

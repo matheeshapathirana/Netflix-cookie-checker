@@ -115,10 +115,11 @@ try:
                 except Exception as e:
                     print(f"Error occurred: {str(e)} - {filename}\n")
                     exceptions += 1
+
+    pbar.finish()
     print(
         f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}"
     )
-
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
     sys.exit()
