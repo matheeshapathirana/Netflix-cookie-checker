@@ -36,7 +36,7 @@ try:
     rand_number = random.randint(1, 99999)
 
     progress = 0
-    pbar = progressbar.ProgressBar(max_value=maximum())
+    pbar = progressbar.ProgressBar(maxval=maximum())
 
 
     def convert_netscape_cookie_to_json(cookie_file_content):
@@ -76,6 +76,7 @@ try:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
                         if 0 <= progress <= maximum():
+                            pbar.start()
                             pbar.update(progress)
                             progress += 1
                         else:
@@ -107,6 +108,7 @@ try:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
                         if 0 <= progress <= maximum():
+                            pbar.start()
                             pbar.update(progress)
                             progress += 1
                         else:
@@ -126,6 +128,7 @@ try:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
                         if 0 <= progress <= maximum():
+                            pbar.start()
                             pbar.update(progress)
                             progress += 1
                         else:
