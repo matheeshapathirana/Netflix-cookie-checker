@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import progressbar
 
+
 try:
     working_cookies_path = "working_cookies"
     exceptions = 0
