@@ -9,3 +9,5 @@
 /Tests/
 /cookies/
 .gitignore
+/json_cookies/
+/.vscode/
