@@ -79,7 +79,6 @@ try:
                         progress += 1
                     else:
                         pass
-        # pbar.finish()
     except FileNotFoundError:
         print(
             "Error Occurred :Default 'cookies' folder not found, please select a valid folder"
