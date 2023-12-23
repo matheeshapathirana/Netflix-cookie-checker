@@ -45,7 +45,7 @@ try:
 
 
     progress = 0
-    pbar = progressbar.ProgressBar(max_value=maximum())
+    pbar = progressbar.ProgressBar(maxval=maximum())
 
 
     def load_cookies_from_json(json_cookies_path):
@@ -67,6 +67,7 @@ try:
             driver.add_cookie(cookie)
 
         driver.refresh()
+        pbar.start()
         pbar.update(progress)
         progress += 1
 
