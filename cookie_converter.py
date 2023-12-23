@@ -74,8 +74,11 @@ try:
                 with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
                     f.write(json_data)
                     print(f"{filename} - DONE!")
-                    pbar.update(progress)
-                    progress += 1
+                    if 0 <= progress <= maximum():
+                        pbar.update(progress)
+                        progress += 1
+                    else:
+                        pass
         # pbar.finish()
     except FileNotFoundError:
         print(
