@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 import progressbar
+import psutil
 
 
 try:
@@ -13,6 +14,12 @@ try:
     exceptions = 0
     working_cookies = 0
     expired_cookies = 0
+
+    def kill_driver():
+        process_name = "geckodriver"
+        for proc in psutil.process_iter():
+            if proc.name() == process_name:
+                proc.kill()
 
     if os.name == "posix":
         folder_path = "json_cookies"
@@ -71,6 +78,7 @@ try:
         ):
             print(f"Cookie Not working - {filename}")
             driver.quit()
+            kill_driver()
             expired_cookies += 1
         else:
             print(f"Working cookie found! - {filename}")
@@ -79,12 +87,14 @@ try:
                 with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
                     a.write(content)
                 driver.quit()
+                kill_driver()
                 working_cookies += 1
 
             except FileExistsError:
                 with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
                     a.write(content)
                 driver.quit()
+                kill_driver()
                 working_cookies += 1
 
     for filename in os.listdir("json_cookies"):
