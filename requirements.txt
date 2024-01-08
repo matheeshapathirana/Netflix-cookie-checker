@@ -1,3 +1,3 @@
 selenium==4.16.0
 progressbar==2.5
-psutil==5.9.5
+psutil==5.9.7
