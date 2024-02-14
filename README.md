@@ -8,13 +8,16 @@
 
 # Usage
 
-1. Open the [Colab Notebook](https://colab.research.google.com/drive/1DP-77oUKjB4ERMaWvpWyffyRtiqFj-Ae?usp=sharing).
-2. Upload cookies to 'cookies' folder.
+1. Open the [Colab Notebook](https://colab.research.google.com/github/matheeshapathirana/Netflix-cookie-checker/blob/colab-version/Netflix_Cookie_Checker.ipynb).
+   
+   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/matheeshapathirana/Netflix-cookie-checker/blob/colab-version/Netflix_Cookie_Checker.ipynb)
+
+3. Upload cookies to 'cookies' folder.
 
    ![Upload](images/upload.png)
-3. Run Install requirements cell.
-4. Run cookies converter cell.
-5. Run start cookie checker cell.
+4. Run Install requirements cell.
+5. Run cookies converter cell.
+6. Run start cookie checker cell.
 
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
