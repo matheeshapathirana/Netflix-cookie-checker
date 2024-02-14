@@ -1,46 +1,17 @@
 import json
 import os
 import sys
-import config
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
-import progressbar
-import psutil
-
+from bs4 import BeautifulSoup
+import requests
+import time
 
 try:
     working_cookies_path = "working_cookies"
     exceptions = 0
     working_cookies = 0
     expired_cookies = 0
+    start = time.time()
 
-    def kill_driver():
-        process_name = "geckodriver"
-        for proc in psutil.process_iter():
-            if proc.name() == process_name:
-                proc.kill()
-
-    if os.name == "posix":
-        folder_path = "json_cookies"
-        if not os.path.isdir(folder_path):
-            print(
-                "Error Occurred :Default 'json_cookies' folder not found, please run cookie_converter.py first"
-            )
-            sys.exit()
-
-    else:
-        import tkinter
-        from tkinter import filedialog
-
-        if config.use_folder_selector:
-            tkinter.Tk().withdraw()
-            folder_path = filedialog.askdirectory()
-            if folder_path == "":
-                folder_path = "json_cookies"
-                print("Using default path")
-            else:
-                print(f"Using path: {folder_path}")
 
     def maximum():
         count = 0
@@ -48,37 +19,36 @@ try:
             count += len(files)
             return count
 
-    progress = 0
-    pbar = progressbar.ProgressBar(maxval=maximum())
-    pbar.start()
 
     def load_cookies_from_json(json_cookies_path):
         with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
             cookie = json.load(cookie_file)
         return cookie
 
+
     def open_webpage_with_cookies(link, json_cookies):
-        global progress
         global working_cookies
         global expired_cookies
-        firefox_options = Options()
-        firefox_options.add_argument("--headless")
-        driver = webdriver.Firefox(options=firefox_options)
-        driver.get(link)
+
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        })
+
+        # Request the page
+        response = session.get(link)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Clear all existing cookies
+        session.cookies.clear()
 
         for cookie in json_cookies:
-            driver.add_cookie(cookie)
+            session.cookies.set(cookie['name'], cookie['value'])
 
-        driver.refresh()
-        pbar.update(progress)
-        progress += 1
+        response = session.get(link)
 
-        if driver.find_elements(By.CSS_SELECTOR, ".btn") or driver.find_elements(
-            By.CSS_SELECTOR, ".e1ax5wel1"
-        ):
+        if 'Sign In' in response.text or 'btn' in response.text:
             print(f"Cookie Not working - {filename}")
-            driver.quit()
-            kill_driver()
             expired_cookies += 1
         else:
             print(f"Working cookie found! - {filename}")
@@ -86,16 +56,12 @@ try:
                 os.mkdir(working_cookies_path)
                 with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
                     a.write(content)
-                driver.quit()
-                kill_driver()
                 working_cookies += 1
-
             except FileExistsError:
                 with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
                     a.write(content)
-                driver.quit()
-                kill_driver()
                 working_cookies += 1
+
 
     for filename in os.listdir("json_cookies"):
         filepath = os.path.join("json_cookies", filename)
@@ -120,9 +86,9 @@ try:
                     print(f"Error occurred: {str(e)} - {filename}\n")
                     exceptions += 1
 
-    pbar.finish()
+    end = time.time()
     print(
-        f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}"
+        f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds"
     )
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
