@@ -1,3 +1,2 @@
-selenium==4.17.2
-progressbar==2.5
-psutil==5.9.8
+beautifulsoup4==4.12.3
+Requests==2.31.0
