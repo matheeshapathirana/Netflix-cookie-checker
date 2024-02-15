@@ -24,6 +24,7 @@ num_threads = 5  # Define the number of threads here
 # | > 100 Mbps    | 10-20                   |
 # |_________________________________________|
 
+
 async def load_cookies_from_json(json_cookies_path):
     with open(json_cookies_path, "r", encoding="utf-8") as cookie_file:
         cookie = json.load(cookie_file)
@@ -67,13 +68,17 @@ async def process_cookie_file(filename):
             try:
                 cookies = await load_cookies_from_json(filepath)
                 async with aiohttp.ClientSession() as session:
-                    content = await open_webpage_with_cookies(session, url, cookies, filename)
+                    content = await open_webpage_with_cookies(
+                        session, url, cookies, filename
+                    )
                     if content:
                         # Save working cookies to JSON file
                         with open(f"working_cookies/{filename}.json", "w") as json_file:
                             json.dump(cookies, json_file)
             except json.decoder.JSONDecodeError:
-                print(f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n")
+                print(
+                    f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
+                )
                 global exceptions
                 exceptions += 1
             except Exception as e:
@@ -97,7 +102,8 @@ try:
     asyncio.run(main())
     end = time.time()
     print(
-        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds")
+        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds"
+    )
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
     sys.exit()
