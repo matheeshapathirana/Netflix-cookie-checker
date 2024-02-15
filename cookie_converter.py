@@ -2,7 +2,6 @@ import json
 import os
 import random
 import shutil
-import progressbar
 
 
 try:
@@ -33,8 +32,6 @@ try:
 
     rand_number = random.randint(1, 99999)
 
-    progress = 0
-    pbar = progressbar.ProgressBar(maxval=maximum())
 
     def convert_netscape_cookie_to_json(cookie_file_content):
         cookies = []
@@ -71,12 +68,6 @@ try:
                     with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
         except FileNotFoundError:
             print(
                 "Error Occurred :Default 'cookies' folder not found, please select a valid folder"
@@ -103,12 +94,6 @@ try:
                     with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
 
         else:
             os.mkdir(str(f"temp {rand_number}"))
@@ -125,15 +110,8 @@ try:
                     ) as f:
                         f.write(json_data)
                         print(f"{filename} - DONE!")
-                        if 0 <= progress <= maximum():
-                            pbar.start()
-                            pbar.update(progress)
-                            progress += 1
-                        else:
-                            pass
 
             print(f"\n\nsaved cookies to the temp folder - temp {rand_number}")
-    pbar.finish()
 
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
