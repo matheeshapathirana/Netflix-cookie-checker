@@ -2,6 +2,7 @@ import json
 import os
 import random
 import shutil
+import sys
 
 
 try:
@@ -114,4 +115,4 @@ try:
 
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
-    exit()
+    sys.exit()
