@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-from bs4 import BeautifulSoup
 import requests
 import time
 
@@ -35,7 +34,7 @@ try:
         )
 
         # Request the page
-        response = session.get(link)
+        session.get(link)
 
         # Clear all existing cookies
         session.cookies.clear()
