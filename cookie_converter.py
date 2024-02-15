@@ -32,7 +32,6 @@ try:
 
     rand_number = random.randint(1, 99999)
 
-
     def convert_netscape_cookie_to_json(cookie_file_content):
         cookies = []
         for line in cookie_file_content.splitlines():
