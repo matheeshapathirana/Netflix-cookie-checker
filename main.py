@@ -36,7 +36,6 @@ try:
 
         # Request the page
         response = session.get(link)
-        soup = BeautifulSoup(response.content, "html.parser")
 
         # Clear all existing cookies
         session.cookies.clear()
