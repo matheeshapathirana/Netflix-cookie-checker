@@ -12,7 +12,7 @@ working_cookies = 0
 expired_cookies = 0
 start = time.time()
 
-num_threads = 500  # Define the number of threads here
+num_threads = 5  # Define the number of threads here
 
 
 # ___________________________________________
