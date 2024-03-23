@@ -11,3 +11,5 @@
 .gitignore
 /json_cookies/
 /.vscode/
+# GitHub Copilot persisted chat sessions
+/copilot/chatSessions
