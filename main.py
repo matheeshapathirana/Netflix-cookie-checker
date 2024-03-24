@@ -44,7 +44,7 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
     for cookie in json_cookies:
         session.cookie_jar.update_cookies({cookie["name"]: cookie["value"]})
 
-    async with session.get(link) as response:
+    async with session.get(link, timeout=10) as response:
         content = await response.text()
         if "Sign In" in content or "Sign in" in content:
             print(f"Cookie Not working - {filename}")
