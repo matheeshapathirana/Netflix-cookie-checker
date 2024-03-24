@@ -32,8 +32,7 @@ async def load_cookies_from_json(json_cookies_path):
 
 
 async def open_webpage_with_cookies(session, link, json_cookies, filename):
-    global working_cookies
-    global expired_cookies
+    global working_cookies, expired_cookies, plan
 
     # Request the page
     await session.get(link)
@@ -74,7 +73,7 @@ async def process_cookie_file(filename):
                     )
                     if content:
                         # Save working cookies to JSON file
-                        with open(f"working_cookies/{filename}.json", "w") as json_file:
+                        with open(f"working_cookies/{filename} - {plan}.json", "w") as json_file:
                             json.dump(cookies, json_file)
             except json.decoder.JSONDecodeError:
                 print(
@@ -103,7 +102,7 @@ try:
     asyncio.run(main())
     end = time.time()
     print(
-        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {end - start} Seconds"
+        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
     )
 except KeyboardInterrupt:
     print("\n\nProgram Interrupted by user")
