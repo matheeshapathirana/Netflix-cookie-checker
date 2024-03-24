@@ -11,6 +11,7 @@ exceptions = 0
 working_cookies = 0
 expired_cookies = 0
 start = time.time()
+plan = None
 
 num_threads = 5  # Define the number of threads here
 
