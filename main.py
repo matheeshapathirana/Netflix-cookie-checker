@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import aiohttp
 import asyncio
 import time
 
@@ -46,11 +45,12 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
 
     async with session.get(link) as response:
         content = await response.text()
-        if "Sign In" in content or "btn" in content:
+        if "Sign In" in content or "Sign in" in content:
             print(f"Cookie Not working - {filename}")
             expired_cookies += 1
         else:
-            print(f"Working cookie found! - {filename}")
+            plan = "Premium" if "<b>Premium</b>" in content else "Basic" if "<b>Basic</b>" in content else "Standard" if "<b>Standard</b>" in content else "Unknown"
+            print(f"Cookie Working - {filename} | Plan: {plan}")
             try:
                 os.mkdir(working_cookies_path)
                 working_cookies += 1
@@ -64,7 +64,7 @@ async def process_cookie_file(filename):
     filepath = os.path.join("json_cookies", filename)
     if os.path.isfile(filepath):
         with open(filepath, "r", encoding="utf-8"):
-            url = "https://netflix.com/login"
+            url = "https://www.netflix.com/YourAccount"
             try:
                 cookies = await load_cookies_from_json(filepath)
                 async with aiohttp.ClientSession() as session:
