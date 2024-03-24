@@ -2,5 +2,4 @@ Requests==2.31.0
 bs4==0.0.2
 beautifulsoup4==4.12.3
 psutil==5.9.8
-aiohttp==3.9.3
 asyncio==3.4.3
