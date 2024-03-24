@@ -49,7 +49,15 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             print(f"Cookie Not working - {filename}")
             expired_cookies += 1
         else:
-            plan = "Premium" if "<b>Premium</b>" in content else "Basic" if "<b>Basic</b>" in content else "Standard" if "<b>Standard</b>" in content else "Unknown"
+            plan = (
+                "Premium"
+                if "<b>Premium</b>" in content
+                else (
+                    "Basic"
+                    if "<b>Basic</b>" in content
+                    else "Standard" if "<b>Standard</b>" in content else "Unknown"
+                )
+            )
             print(f"Cookie Working - {filename} | Plan: {plan}")
             try:
                 os.mkdir(working_cookies_path)
@@ -73,7 +81,9 @@ async def process_cookie_file(filename):
                     )
                     if content:
                         # Save working cookies to JSON file
-                        with open(f"working_cookies/{filename} - {plan}.json", "w") as json_file:
+                        with open(
+                            f"working_cookies/{filename} - {plan}.json", "w"
+                        ) as json_file:
                             json.dump(cookies, json_file)
             except json.decoder.JSONDecodeError:
                 print(
