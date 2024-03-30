@@ -18,9 +18,13 @@ try:
             tkinter.Tk().withdraw()
             folder_path = filedialog.askdirectory()
             if folder_path == "":
-                print("Trying to use default folder 'cookies'\n")
-                folder_path = "cookies"
-                break
+                if os.path.isdir("cookies"):
+                    folder_path = "cookies"
+                    print("Trying to use default folder 'cookies'\n")
+                    break
+                else:
+                    print("No folder selected or default 'cookies' folder not found, Exiting...")
+                    sys.exit()
 
             else:
                 break
