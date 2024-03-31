@@ -15,7 +15,7 @@ expired_cookies = 0
 start = time.time()
 plan = None
 
-num_threads = 200  # <--- Define the number of threads here
+num_threads = 5  # <--- Define the number of threads here
 
 # ___________________________________________
 # | Network Speed | Recommended no. threads |
