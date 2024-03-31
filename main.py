@@ -28,7 +28,6 @@ num_threads = 5  # <--- Define the number of threads here
 
 
 headers = {
-
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.5",
@@ -41,8 +40,7 @@ headers = {
     "Sec-Fetch-Dest": "document",
     "Sec-Fetch-Mode": "navigate",
     "Sec-Fetch-Site": "same-origin",
-    "Sec-Fetch-User": "?1"
-
+    "Sec-Fetch-User": "?1",
 }
 
 
@@ -66,14 +64,25 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
 
     async with session.get(link, headers=headers, timeout=10) as response:
         content = await response.text()
-        soup = BeautifulSoup(content, 'lxml')
+        soup = BeautifulSoup(content, "lxml")
         if soup.find(string="Sign In") or soup.find(string="Sign in"):
             print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
             expired_cookies += 1
         else:
-            plan = "Premium" if soup.find(string="Premium") else "Basic" if soup.find(
-                string="Basic") else "Standard" if soup.find(string="Standard") else "Unknown"
-            print(Fore.GREEN + f"[✔️] Cookie Working - {filename} | Plan: {plan}" + Fore.RESET)
+            plan = (
+                "Premium"
+                if soup.find(string="Premium")
+                else (
+                    "Basic"
+                    if soup.find(string="Basic")
+                    else "Standard" if soup.find(string="Standard") else "Unknown"
+                )
+            )
+            print(
+                Fore.GREEN
+                + f"[✔️] Cookie Working - {filename} | Plan: {plan}"
+                + Fore.RESET
+            )
             try:
                 os.mkdir(working_cookies_path)
                 working_cookies += 1
@@ -96,16 +105,24 @@ async def process_cookie_file(filename):
                     )
                     if content:
                         # Save working cookies to JSON file
-                        with open(f"working_cookies/{filename} - {plan}.json", "w") as json_file:
+                        with open(
+                            f"working_cookies/{filename} - {plan}.json", "w"
+                        ) as json_file:
                             json.dump(cookies, json_file)
             except json.decoder.JSONDecodeError:
-                print(Fore.RED +
-                      f"[⚠️] Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
-                      + Fore.RESET)
+                print(
+                    Fore.RED
+                    + f"[⚠️] Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
+                    + Fore.RESET
+                )
                 global exceptions
                 exceptions += 1
             except Exception as e:
-                print(Fore.RED + f"[⚠️] Error occurred: {str(e)} - {filename}\n" + Fore.RESET)
+                print(
+                    Fore.RED
+                    + f"[⚠️] Error occurred: {str(e)} - {filename}\n"
+                    + Fore.RESET
+                )
                 exceptions += 1
 
 
@@ -114,7 +131,11 @@ async def main():
         os.path.isdir("json_cookies")
         try:
             if os.path.isdir("working_cookies"):
-                print(Fore.RED+"[⚠️] working_cookies folder already exists, new cookies will be appended.\n"+Fore.RESET)
+                print(
+                    Fore.RED
+                    + "[⚠️] working_cookies folder already exists, new cookies will be appended.\n"
+                    + Fore.RESET
+                )
 
             tasks = []
             for filename in os.listdir("json_cookies"):
@@ -136,18 +157,22 @@ async def main():
             if tasks:
                 await asyncio.gather(*tasks)
     except FileNotFoundError:
-        print(Fore.RED +
-              "[⚠️] Error Occurred: Please use cookie_converter.py to convert cookies."
-              + Fore.RESET)
+        print(
+            Fore.RED
+            + "[⚠️] Error Occurred: Please use cookie_converter.py to convert cookies."
+            + Fore.RESET
+        )
         sys.exit()
 
 
 try:
     asyncio.run(main())
     end = time.time()
-    print(Fore.YELLOW +
-          f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
-          + Fore.RESET)
+    print(
+        Fore.YELLOW
+        + f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
+        + Fore.RESET
+    )
 except KeyboardInterrupt:
-    print(Fore.RED+"\n\nProgram Interrupted by user"+Fore.RESET)
+    print(Fore.RED + "\n\nProgram Interrupted by user" + Fore.RESET)
     sys.exit()
