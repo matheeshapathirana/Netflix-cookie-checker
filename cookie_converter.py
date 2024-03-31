@@ -23,7 +23,9 @@ try:
                     print("Trying to use default folder 'cookies'\n")
                     break
                 else:
-                    print("No folder selected or default 'cookies' folder not found, Exiting...")
+                    print(
+                        "No folder selected or default 'cookies' folder not found, Exiting..."
+                    )
                     sys.exit()
 
             else:
