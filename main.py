@@ -4,8 +4,10 @@ import sys
 import asyncio
 import time
 import aiohttp
+from bs4 import BeautifulSoup
+from colorama import Fore
 
-print("Initializing!, Please wait...\n")
+print(Fore.YELLOW + "Initializing!, Please wait...\n" + Fore.RESET)
 working_cookies_path = "working_cookies"
 exceptions = 0
 working_cookies = 0
@@ -13,8 +15,7 @@ expired_cookies = 0
 start = time.time()
 plan = None
 
-num_threads = 5  # Define the number of threads here
-
+num_threads = 200  # <--- Define the number of threads here
 
 # ___________________________________________
 # | Network Speed | Recommended no. threads |
@@ -24,6 +25,25 @@ num_threads = 5  # Define the number of threads here
 # | 20-100 Mbps   | 5-10                    |
 # | > 100 Mbps    | 10-20                   |
 # |_________________________________________|
+
+
+headers = {
+
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Referer": "https://www.netflix.com/login",
+    "DNT": "1",
+    "Sec-GPC": "1",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1"
+
+}
 
 
 async def load_cookies_from_json(json_cookies_path):
@@ -44,14 +64,16 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
     for cookie in json_cookies:
         session.cookie_jar.update_cookies({cookie["name"]: cookie["value"]})
 
-    async with session.get(link, timeout=10) as response:
+    async with session.get(link, headers=headers, timeout=10) as response:
         content = await response.text()
-        if "Sign In" in content or "Sign in" in content:
-            print(f"Cookie Not working - {filename}")
+        soup = BeautifulSoup(content, 'lxml')
+        if soup.find(string="Sign In") or soup.find(string="Sign in"):
+            print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
             expired_cookies += 1
         else:
-            plan = "Premium" if "<b>Premium</b>" in content else "Basic" if "<b>Basic</b>" in content else "Standard" if "<b>Standard</b>" in content else "Unknown"
-            print(f"Cookie Working - {filename} | Plan: {plan}")
+            plan = "Premium" if soup.find(string="Premium") else "Basic" if soup.find(
+                string="Basic") else "Standard" if soup.find(string="Standard") else "Unknown"
+            print(Fore.GREEN + f"[✔️] Cookie Working - {filename} | Plan: {plan}" + Fore.RESET)
             try:
                 os.mkdir(working_cookies_path)
                 working_cookies += 1
@@ -77,34 +99,55 @@ async def process_cookie_file(filename):
                         with open(f"working_cookies/{filename} - {plan}.json", "w") as json_file:
                             json.dump(cookies, json_file)
             except json.decoder.JSONDecodeError:
-                print(
-                    f"Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
-                )
+                print(Fore.RED +
+                      f"[⚠️] Please use cookie_converter.py to convert your cookies to json format! (File: {filename})\n"
+                      + Fore.RESET)
                 global exceptions
                 exceptions += 1
             except Exception as e:
-                print(f"Error occurred: {str(e)} - {filename}\n")
+                print(Fore.RED + f"[⚠️] Error occurred: {str(e)} - {filename}\n" + Fore.RESET)
                 exceptions += 1
 
 
 async def main():
-    tasks = []
-    for filename in os.listdir("json_cookies"):
-        task = asyncio.create_task(process_cookie_file(filename))
-        tasks.append(task)
-        if len(tasks) >= num_threads:
-            await asyncio.gather(*tasks)
+    try:
+        os.path.isdir("json_cookies")
+        try:
+            if os.path.isdir("working_cookies"):
+                print(Fore.RED+"[⚠️] working_cookies folder already exists, new cookies will be appended.\n"+Fore.RESET)
+
             tasks = []
-    if tasks:
-        await asyncio.gather(*tasks)
+            for filename in os.listdir("json_cookies"):
+                task = asyncio.create_task(process_cookie_file(filename))
+                tasks.append(task)
+                if len(tasks) >= num_threads:
+                    await asyncio.gather(*tasks)
+                    tasks = []
+            if tasks:
+                await asyncio.gather(*tasks)
+        except FileNotFoundError:
+            tasks = []
+            for filename in os.listdir("json_cookies"):
+                task = asyncio.create_task(process_cookie_file(filename))
+                tasks.append(task)
+                if len(tasks) >= num_threads:
+                    await asyncio.gather(*tasks)
+                    tasks = []
+            if tasks:
+                await asyncio.gather(*tasks)
+    except FileNotFoundError:
+        print(Fore.RED +
+              "[⚠️] Error Occurred: Please use cookie_converter.py to convert cookies."
+              + Fore.RESET)
+        sys.exit()
 
 
 try:
     asyncio.run(main())
     end = time.time()
-    print(
-        f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
-    )
+    print(Fore.YELLOW +
+          f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
+          + Fore.RESET)
 except KeyboardInterrupt:
-    print("\n\nProgram Interrupted by user")
+    print(Fore.RED+"\n\nProgram Interrupted by user"+Fore.RESET)
     sys.exit()
