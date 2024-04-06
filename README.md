@@ -35,7 +35,7 @@
 
 1.  Run [cookie_converter.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/b82b684355a80e23f5648e6082090d9cd5332cc3/cookie_converter.py) to convert Netscape cookies to json format.
 2. Edit the number of threads in [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/0627ae9af2c51276a7a1fa9880a4a82cf0e606d4/main.py).
-   https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/0627ae9af2c51276a7a1fa9880a4a82cf0e606d4/main.py#L16
+   https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/38013821e132c87a02f03e67de68a87593a037ab/main.py#L18
 2. Run [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/5981527b46093775ecb027c73de0bcc6361eb5ea/main.py).
 
 **make sure you have a good internet connection.**
