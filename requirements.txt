@@ -4,5 +4,5 @@ beautifulsoup4==4.12.3
 psutil==5.9.8
 asyncio==3.4.3
 aiohttp==3.9.3
-lxml==5.2.0
+lxml==5.2.1
 colorama==0.4.6
