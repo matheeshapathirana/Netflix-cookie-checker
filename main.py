@@ -14,6 +14,7 @@ working_cookies = 0
 expired_cookies = 0
 start = time.time()
 plan = None
+email = None
 
 num_threads = 5  # <--- Define the number of threads here
 
@@ -51,7 +52,7 @@ async def load_cookies_from_json(json_cookies_path):
 
 
 async def open_webpage_with_cookies(session, link, json_cookies, filename):
-    global working_cookies, expired_cookies, plan
+    global working_cookies, expired_cookies, plan, email
 
     # Request the page
     await session.get(link)
@@ -69,18 +70,11 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
             expired_cookies += 1
         else:
-            plan = (
-                "Premium"
-                if soup.find(string="Premium")
-                else (
-                    "Basic"
-                    if soup.find(string="Basic")
-                    else "Standard" if soup.find(string="Standard") else "Unknown"
-                )
-            )
+            plan = soup.select_one('div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)').text
+            email = soup.select_one('.account-section-email').text
             print(
                 Fore.GREEN
-                + f"[✔️] Cookie Working - {filename} | Plan: {plan}"
+                + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
                 + Fore.RESET
             )
             try:
@@ -103,12 +97,22 @@ async def process_cookie_file(filename):
                     content = await open_webpage_with_cookies(
                         session, url, cookies, filename
                     )
+
+                    additional_json = {
+                        "_comment": "Cookie Checked by https://github.com/matheeshapathirana/Netflix-cookie-checker",
+                        "Credits": "Matheesha Pathirana",
+                        "Discord Server": "https://discord.gg/RSCdKeKB5X",
+                        "Special Thanks": "- To all the contributors who have helped improve this project by submitting pull requests.\n- To everyone who has starred the project and supported our work",
+                        "Disclaimer": "This project is for educational purposes only. The authors and contributors are not responsible for how it is used.",
+                        "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!"
+                    }
                     if content:
+                        cookies.append(additional_json)
                         # Save working cookies to JSON file
                         with open(
-                            f"working_cookies/{filename} - {plan}.json", "w"
+                                f"working_cookies/[{email}] - {plan}.json", "w"
                         ) as json_file:
-                            json.dump(cookies, json_file)
+                            json.dump(cookies, json_file, indent=4)
             except json.decoder.JSONDecodeError:
                 print(
                     Fore.RED
