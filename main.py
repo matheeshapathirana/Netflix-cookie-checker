@@ -70,8 +70,10 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
             expired_cookies += 1
         else:
-            plan = soup.select_one('div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)').text
-            email = soup.select_one('.account-section-email').text
+            plan = soup.select_one(
+                "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+            ).text
+            email = soup.select_one(".account-section-email").text
             print(
                 Fore.GREEN
                 + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
@@ -104,13 +106,13 @@ async def process_cookie_file(filename):
                         "Discord Server": "https://discord.gg/RSCdKeKB5X",
                         "Special Thanks": "- To all the contributors who have helped improve this project by submitting pull requests.\n- To everyone who has starred the project and supported our work",
                         "Disclaimer": "This project is for educational purposes only. The authors and contributors are not responsible for how it is used.",
-                        "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!"
+                        "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!",
                     }
                     if content:
                         cookies.append(additional_json)
                         # Save working cookies to JSON file
                         with open(
-                                f"working_cookies/[{email}] - {plan}.json", "w"
+                            f"working_cookies/[{email}] - {plan}.json", "w"
                         ) as json_file:
                             json.dump(cookies, json_file, indent=4)
             except json.decoder.JSONDecodeError:
