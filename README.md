@@ -35,7 +35,7 @@
 
 1.  Run [cookie_converter.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/b82b684355a80e23f5648e6082090d9cd5332cc3/cookie_converter.py) to convert Netscape cookies to json format.
 2. Edit the number of threads in [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/0627ae9af2c51276a7a1fa9880a4a82cf0e606d4/main.py).
-   https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/38013821e132c87a02f03e67de68a87593a037ab/main.py#L18
+   https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/3c7f202b13d7048949d483c459cb7a97852dfa25/main.py#L20
 2. Run [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/5981527b46093775ecb027c73de0bcc6361eb5ea/main.py).
 
 **make sure you have a good internet connection.**
@@ -48,7 +48,15 @@
 | > 100 Mbps    | 10-20                   |
 
 ## [Try colab-version](https://github.com/matheeshapathirana/Netflix-cookie-checker/tree/colab-version)
-## Faster than the old version!!
+
+##  Features
+- Multi-threading
+- Json + Netscape support
+- No Proxies Required
+- No Rate Limiting
+- Super Fast
+- Identify duplicate cookies
+
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
 
