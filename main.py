@@ -72,11 +72,12 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             expired_cookies += 1
         else:
             try:
-                plan = soup.select_one(
-                    "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
-                ).text or soup.select_one(
-                    ".default-ltr-cache-10ajupv"
-                ).text
+                plan = (
+                    soup.select_one(
+                        "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                    ).text
+                    or soup.select_one(".default-ltr-cache-10ajupv").text
+                )
                 email = soup.select_one(".account-section-email").text
             except AttributeError:
                 plan = (
@@ -131,7 +132,7 @@ async def process_cookie_file(filename):
                         cookies.append(additional_json)
                         # Save working cookies to JSON file
                         with open(
-                                f"working_cookies/[{email}] - {plan}.json", "w"
+                            f"working_cookies/[{email}] - {plan}.json", "w"
                         ) as json_file:
                             json.dump(cookies, json_file, indent=4)
             except json.decoder.JSONDecodeError:
@@ -144,9 +145,7 @@ async def process_cookie_file(filename):
                 exceptions += 1
             except Exception as e:
                 print(
-                    Fore.RED
-                    + f"[⚠️] Error occurred: {str(e)} - {filename}"
-                    + Fore.RESET
+                    Fore.RED + f"[⚠️] Error occurred: {str(e)} - {filename}" + Fore.RESET
                 )
                 exceptions += 1
 
