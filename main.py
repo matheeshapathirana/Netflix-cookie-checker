@@ -70,10 +70,21 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
             expired_cookies += 1
         else:
-            plan = soup.select_one(
-                "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
-            ).text
-            email = soup.select_one(".account-section-email").text
+            try:
+                plan = soup.select_one(
+                    "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                ).text
+                email = soup.select_one(".account-section-email").text
+            except:
+                plan = (
+                "Premium"
+                if soup.find(string="Premium")
+                else (
+                    "Basic"
+                    if soup.find(string="Basic")
+                    else "Standard" if soup.find(string="Standard") else "Unknown"
+                )
+                )
             print(
                 Fore.GREEN
                 + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
