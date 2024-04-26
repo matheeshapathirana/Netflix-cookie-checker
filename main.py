@@ -77,13 +77,13 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
                 email = soup.select_one(".account-section-email").text
             except:
                 plan = (
-                "Premium"
-                if soup.find(string="Premium")
-                else (
-                    "Basic"
-                    if soup.find(string="Basic")
-                    else "Standard" if soup.find(string="Standard") else "Unknown"
-                )
+                    "Premium"
+                    if soup.find(string="Premium")
+                    else (
+                        "Basic"
+                        if soup.find(string="Basic")
+                        else "Standard" if soup.find(string="Standard") else "Unknown"
+                    )
                 )
             print(
                 Fore.GREEN
