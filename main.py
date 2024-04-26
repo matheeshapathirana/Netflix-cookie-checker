@@ -12,6 +12,7 @@ working_cookies_path = "working_cookies"
 exceptions = 0
 working_cookies = 0
 expired_cookies = 0
+duplicate_cookies = 0
 start = time.time()
 plan = None
 email = None
@@ -52,7 +53,7 @@ async def load_cookies_from_json(json_cookies_path):
 
 
 async def open_webpage_with_cookies(session, link, json_cookies, filename):
-    global working_cookies, expired_cookies, plan, email
+    global working_cookies, expired_cookies, plan, email, duplicate_cookies
 
     # Request the page
     await session.get(link)
@@ -73,9 +74,11 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
             try:
                 plan = soup.select_one(
                     "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                ).text or soup.select_one(
+                    ".default-ltr-cache-10ajupv"
                 ).text
                 email = soup.select_one(".account-section-email").text
-            except:
+            except AttributeError:
                 plan = (
                     "Premium"
                     if soup.find(string="Premium")
@@ -85,18 +88,23 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
                         else "Standard" if soup.find(string="Standard") else "Unknown"
                     )
                 )
-            print(
-                Fore.GREEN
-                + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
-                + Fore.RESET
-            )
             try:
                 os.mkdir(working_cookies_path)
                 working_cookies += 1
                 return content  # Return content if the cookie is working
             except FileExistsError:
-                working_cookies += 1
-                return content  # Return content if the cookie is working
+                print(
+                    Fore.YELLOW
+                    + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
+                    + Fore.RESET
+                )
+                duplicate_cookies += 1
+
+            print(
+                Fore.GREEN
+                + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
+                + Fore.RESET
+            )
 
 
 async def process_cookie_file(filename):
@@ -123,7 +131,7 @@ async def process_cookie_file(filename):
                         cookies.append(additional_json)
                         # Save working cookies to JSON file
                         with open(
-                            f"working_cookies/[{email}] - {plan}.json", "w"
+                                f"working_cookies/[{email}] - {plan}.json", "w"
                         ) as json_file:
                             json.dump(cookies, json_file, indent=4)
             except json.decoder.JSONDecodeError:
@@ -137,7 +145,7 @@ async def process_cookie_file(filename):
             except Exception as e:
                 print(
                     Fore.RED
-                    + f"[⚠️] Error occurred: {str(e)} - {filename}\n"
+                    + f"[⚠️] Error occurred: {str(e)} - {filename}"
                     + Fore.RESET
                 )
                 exceptions += 1
@@ -187,7 +195,7 @@ try:
     end = time.time()
     print(
         Fore.YELLOW
-        + f"\nSummary:\nTotal cookies: {len(os.listdir('json_cookies'))}\nWorking cookies: {working_cookies}\nExpired cookies: {expired_cookies}\nInvalid cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
+        + f"\nSummary:\nTotal Cookies: {len(os.listdir('json_cookies'))}\nWorking Cookies: {working_cookies}\nExpired Cookies: {expired_cookies}\nDuplicate Cookies: {duplicate_cookies}\nInvalid Cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
         + Fore.RESET
     )
 except KeyboardInterrupt:
