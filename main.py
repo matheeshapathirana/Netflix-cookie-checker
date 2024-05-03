@@ -17,7 +17,7 @@ start = time.time()
 plan = None
 email = None
 
-num_threads = 5  # <--- Define the number of threads here
+num_threads = 10  # <--- Define the number of threads here
 
 # ___________________________________________
 # | Network Speed | Recommended no. threads |
@@ -73,10 +73,10 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
         else:
             try:
                 plan = (
-                    soup.select_one(
-                        "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
-                    ).text
-                    or soup.select_one(".default-ltr-cache-10ajupv").text
+                        soup.select_one(
+                            "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                        ).text
+                        or soup.select_one(".default-ltr-cache-10ajupv").text or soup.select_one(".default-ltr-cache-10ajupv").text
                 )
                 email = soup.select_one(".account-section-email").text
             except AttributeError:
@@ -89,26 +89,13 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
                         else "Standard" if soup.find(string="Standard") else "Unknown"
                     )
                 )
-            try:
-                os.mkdir(working_cookies_path)
-                working_cookies += 1
-                return content  # Return content if the cookie is working
-            except FileExistsError:
-                print(
-                    Fore.YELLOW
-                    + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
-                    + Fore.RESET
-                )
-                duplicate_cookies += 1
 
-            print(
-                Fore.GREEN
-                + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
-                + Fore.RESET
-            )
+                os.mkdir(working_cookies_path)
+                return content  # Return content if the cookie is working
 
 
 async def process_cookie_file(filename):
+    global duplicate_cookies, working_cookies
     filepath = os.path.join("json_cookies", filename)
     if os.path.isfile(filepath):
         with open(filepath, "r", encoding="utf-8"):
@@ -129,12 +116,28 @@ async def process_cookie_file(filename):
                         "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!",
                     }
                     if content:
-                        cookies.append(additional_json)
-                        # Save working cookies to JSON file
-                        with open(
-                            f"working_cookies/[{email}] - {plan}.json", "w"
-                        ) as json_file:
-                            json.dump(cookies, json_file, indent=4)
+                        try:
+                            cookies.append(additional_json)
+                            # Save working cookies to JSON file
+                            with open(
+                                    f"working_cookies/[{email}] - {plan}.json", "w"
+                            ) as json_file:
+                                json.dump(cookies, json_file, indent=4)
+                            working_cookies += 1
+                        except FileExistsError:
+                            print(
+                                Fore.YELLOW
+                                + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
+                                + Fore.RESET
+                            )
+                            duplicate_cookies += 1
+
+                        print(
+                            Fore.GREEN
+                            + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
+                            + Fore.RESET
+                        )
+
             except json.decoder.JSONDecodeError:
                 print(
                     Fore.RED
@@ -143,6 +146,14 @@ async def process_cookie_file(filename):
                 )
                 global exceptions
                 exceptions += 1
+            except FileExistsError:
+                print(
+                    Fore.YELLOW
+                    + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
+                    + Fore.RESET
+                )
+                duplicate_cookies += 1
+
             except Exception as e:
                 print(
                     Fore.RED + f"[⚠️] Error occurred: {str(e)} - {filename}" + Fore.RESET
