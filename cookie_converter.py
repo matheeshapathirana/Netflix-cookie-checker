@@ -7,7 +7,7 @@ from colorama import Fore
 
 def identify_file(file_name):
     try:
-        with open(file_name, 'r') as file_content:
+        with open(file_name, "r") as file_content:
             # Try to parse the file as JSON
             json.load(file_content)
             return "json"
@@ -83,12 +83,12 @@ try:
         print(Fore.RED + f"Folder {path} created!\n" + Fore.RESET)
     except FileExistsError:
         if (
-                input(
-                    Fore.YELLOW
-                    + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
-                    + Fore.RESET
-                )
-                == "y"
+            input(
+                Fore.YELLOW
+                + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
+                + Fore.RESET
+            )
+            == "y"
         ):
             shutil.rmtree(path)
             os.mkdir(path)
@@ -106,7 +106,11 @@ try:
             file_type = identify_file(filepath)
             if file_type == "json":
                 shutil.copy(filepath, os.path.join(path, filename))
-                print(Fore.GREEN + f"[✔️] {filename} - Copied to 'json_cookies' folder!" + Fore.RESET)
+                print(
+                    Fore.GREEN
+                    + f"[✔️] {filename} - Copied to 'json_cookies' folder!"
+                    + Fore.RESET
+                )
             elif file_type == "netscape":
                 with open(filepath, "r", encoding="utf-8") as file:
                     content = file.read()
@@ -118,7 +122,11 @@ try:
                     print(Fore.GREEN + f"[✔️] {filename} - DONE!" + Fore.RESET)
                     no_of_cookies += 1
             else:
-                print(Fore.RED + f"[⚠️] {filename} - Error: File type could not be identified!" + Fore.RESET)
+                print(
+                    Fore.RED
+                    + f"[⚠️] {filename} - Error: File type could not be identified!"
+                    + Fore.RESET
+                )
 
     print(
         Fore.YELLOW
