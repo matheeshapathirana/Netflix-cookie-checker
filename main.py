@@ -17,7 +17,7 @@ start = time.time()
 plan = None
 email = None
 
-num_threads = 10  # <--- Define the number of threads here
+num_threads = 5  # <--- Define the number of threads here
 
 # ___________________________________________
 # | Network Speed | Recommended no. threads |
