@@ -76,7 +76,7 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
                         soup.select_one(
                             "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
                         ).text
-                        or soup.select_one(".default-ltr-cache-10ajupv").text or soup.select_one(".default-ltr-cache-10ajupv").text
+                        or soup.select_one(".default-ltr-cache-10ajupv").text
                 )
                 email = soup.select_one(".account-section-email").text
             except AttributeError:
