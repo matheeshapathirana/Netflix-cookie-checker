@@ -2,8 +2,9 @@ import json
 import os
 import shutil
 import sys
-from colorama import Fore
+from colorama import init, Fore
 
+init()
 
 def identify_file(file_name):
     try:
