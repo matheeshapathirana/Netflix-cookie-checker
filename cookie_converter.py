@@ -6,6 +6,7 @@ from colorama import init, Fore
 
 init()
 
+
 def identify_file(file_name):
     try:
         with open(file_name, "r") as file_content:
