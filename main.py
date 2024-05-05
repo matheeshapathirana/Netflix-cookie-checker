@@ -5,7 +5,9 @@ import asyncio
 import time
 import aiohttp
 from bs4 import BeautifulSoup
-from colorama import Fore
+from colorama import init, Fore
+
+init()
 
 print(Fore.YELLOW + "Initializing!, Please wait...\n" + Fore.RESET)
 working_cookies_path = "working_cookies"
