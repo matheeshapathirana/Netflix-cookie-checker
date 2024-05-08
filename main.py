@@ -18,8 +18,9 @@ duplicate_cookies = 0
 start = time.time()
 plan = None
 email = None
+ID = None
 
-num_threads = 5  # <--- Define the number of threads here
+num_threads = 50  # <--- Define the number of threads here
 
 # ___________________________________________
 # | Network Speed | Recommended no. threads |
@@ -55,7 +56,7 @@ async def load_cookies_from_json(json_cookies_path):
 
 
 async def open_webpage_with_cookies(session, link, json_cookies, filename):
-    global working_cookies, expired_cookies, plan, email, duplicate_cookies
+    global working_cookies, expired_cookies, plan, email, duplicate_cookies, ID
 
     # Request the page
     await session.get(link)
@@ -75,12 +76,13 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
         else:
             try:
                 plan = (
-                    soup.select_one(
-                        "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
-                    ).text
-                    or soup.select_one(".default-ltr-cache-10ajupv").text
-                )
-                email = soup.select_one(".account-section-email").text
+                        soup.select_one(
+                            "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                        ).text
+                        or soup.select_one(".default-ltr-cache-10ajupv").text or soup.select_one("html.js-focus-visible body div#appMountPoint div div.default-ltr-cache-0 div.default-ltr-cache-1w02yd5.el0v7282 section div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1grpxuk.eslj5pt0 div.default-ltr-cache-1tmwau.ew2l6qe0 div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1u7ywyk.eslj5pt0 div.default-ltr-cache-1rlft14.e1bbao1b0 div.default-ltr-cache-16dvsg3.el0v7280 section.default-ltr-cache-1d3w5wq div.default-ltr-cache-1nca7k1.e19xx6v36 div.default-ltr-cache-q8smu4.e19xx6v35 div.default-ltr-cache-1cr1i8r.e19xx6v33 h3.default-ltr-cache-10ajupv.e19xx6v32")
+                ).text or soup.select_one("/html/body/div[1]/div/div/div/section/div[2]/div/div/div/div/div/div[2]/section/div[2]/div/div[2]/h3").text
+                email = soup.select_one(".account-section-email").text or soup.select_one("div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)")
+
             except AttributeError:
                 plan = (
                     "Premium"
@@ -92,7 +94,7 @@ async def open_webpage_with_cookies(session, link, json_cookies, filename):
                     )
                 )
 
-                os.mkdir(working_cookies_path)
+                os.makedirs(working_cookies_path, exist_ok=True)
                 return content  # Return content if the cookie is working
 
 
@@ -120,25 +122,34 @@ async def process_cookie_file(filename):
                     if content:
                         try:
                             cookies.append(additional_json)
-                            # Save working cookies to JSON file
-                            with open(
-                                f"working_cookies/[{email}] - {plan}.json", "w"
-                            ) as json_file:
-                                json.dump(cookies, json_file, indent=4)
-                            working_cookies += 1
+                            working_cookie_path = os.path.join(working_cookies_path, f"[{email}] - {plan}.json")
+
+                            if os.path.isfile(working_cookie_path):
+                                print(
+                                    Fore.YELLOW
+                                    + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email} | ID: {filename}"
+                                    + Fore.RESET
+                                )
+                                duplicate_cookies += 1
+                            else:
+                                # Write to the file
+                                with open(working_cookie_path, "w", encoding="utf-8") as json_file:
+                                    json.dump(cookies, json_file, indent=4)
+                                    working_cookies += 1
+
+                                print(
+                                    Fore.GREEN
+                                    + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
+                                    + Fore.RESET
+                                )
+
                         except FileExistsError:
                             print(
                                 Fore.YELLOW
-                                + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
+                                + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email} | ID: {ID}"
                                 + Fore.RESET
                             )
                             duplicate_cookies += 1
-
-                        print(
-                            Fore.GREEN
-                            + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
-                            + Fore.RESET
-                        )
 
             except json.decoder.JSONDecodeError:
                 print(
@@ -148,13 +159,6 @@ async def process_cookie_file(filename):
                 )
                 global exceptions
                 exceptions += 1
-            except FileExistsError:
-                print(
-                    Fore.YELLOW
-                    + f"[⚠️] Duplicate Cookie - {filename} | Plan: {plan} | Email: {email}"
-                    + Fore.RESET
-                )
-                duplicate_cookies += 1
 
             except Exception as e:
                 print(

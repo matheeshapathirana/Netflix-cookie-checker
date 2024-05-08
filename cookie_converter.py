@@ -6,6 +6,7 @@ from colorama import init, Fore
 
 init()
 
+
 def identify_file(file_name):
     try:
         with open(file_name, "r") as file_content:
@@ -84,12 +85,12 @@ try:
         print(Fore.RED + f"Folder {path} created!\n" + Fore.RESET)
     except FileExistsError:
         if (
-            input(
-                Fore.YELLOW
-                + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
-                + Fore.RESET
-            )
-            == "y"
+                input(
+                    Fore.YELLOW
+                    + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
+                    + Fore.RESET
+                )
+                == "y"
         ):
             shutil.rmtree(path)
             os.mkdir(path)
