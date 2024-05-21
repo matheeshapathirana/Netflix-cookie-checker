@@ -52,7 +52,7 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
     for cookie in json_cookies:
         session.cookies.set(cookie["name"], cookie["value"])
 
-    session.headers.update({'Accept-Encoding': 'identity'})
+    session.headers.update({"Accept-Encoding": "identity"})
 
     attempt = 0
     while attempt < max_retries:
@@ -64,17 +64,26 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
 
             if soup.find(string="Sign In") or soup.find(string="Sign in"):
                 with lock:
-                    print(Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET)
+                    print(
+                        Fore.RED + f"[❌] Cookie Not working - {filename}" + Fore.RESET
+                    )
                     expired_cookies += 1
                 return False
             else:
                 with lock:
                     try:
-                        plan = soup.select_one(
-                            "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)").text or soup.select_one(
-                            ".default-ltr-cache-10ajupv").text or soup.select_one(
-                            "html.js-focus-visible body div#appMountPoint div div.default-ltr-cache-0 div.default-ltr-cache-1w02yd5.el0v7282 section div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1grpxuk.eslj5pt0 div.default-ltr-cache-1tmwau.ew2l6qe0 div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1u7ywyk.eslj5pt0 div.default-ltr-cache-1rlft14.e1bbao1b0 div.default-ltr-cache-16dvsg3.el0v7280 section.default-ltr-cache-1d3w5wq div.default-ltr-cache-1nca7k1.e19xx6v36 div.default-ltr-cache-q8smu4.e19xx6v35 div.default-ltr-cache-1cr1i8r.e19xx6v33 h3.default-ltr-cache-10ajupv.e19xx6v32").text or soup.select_one(
-                            "/html/body/div[1]/div/div/div/section/div[2]/div/div/div/div/div/div[2]/section/div[2]/div/div[2]/h3").text
+                        plan = (
+                            soup.select_one(
+                                "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                            ).text
+                            or soup.select_one(".default-ltr-cache-10ajupv").text
+                            or soup.select_one(
+                                "html.js-focus-visible body div#appMountPoint div div.default-ltr-cache-0 div.default-ltr-cache-1w02yd5.el0v7282 section div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1grpxuk.eslj5pt0 div.default-ltr-cache-1tmwau.ew2l6qe0 div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1u7ywyk.eslj5pt0 div.default-ltr-cache-1rlft14.e1bbao1b0 div.default-ltr-cache-16dvsg3.el0v7280 section.default-ltr-cache-1d3w5wq div.default-ltr-cache-1nca7k1.e19xx6v36 div.default-ltr-cache-q8smu4.e19xx6v35 div.default-ltr-cache-1cr1i8r.e19xx6v33 h3.default-ltr-cache-10ajupv.e19xx6v32"
+                            ).text
+                            or soup.select_one(
+                                "/html/body/div[1]/div/div/div/section/div[2]/div/div/div/div/div/div[2]/section/div[2]/div/div[2]/h3"
+                            ).text
+                        )
                         email = soup.select_one(".account-section-email").text
                     except AttributeError:
                         plan = (
@@ -83,7 +92,11 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
                             else (
                                 "Basic"
                                 if soup.find(string="Basic")
-                                else "Standard" if soup.find(string="Standard") else "Unknown"
+                                else (
+                                    "Standard"
+                                    if soup.find(string="Standard")
+                                    else "Unknown"
+                                )
                             )
                         )
                 os.makedirs(working_cookies_path, exist_ok=True)
@@ -91,12 +104,19 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
         except (RequestException, ConnectionError, RemoteDisconnected) as e:
             with lock:
                 print(
-                    Fore.RED + f"[⚠️] Request error occurred: {str(e)} - {filename} (Attempt {attempt + 1}/{max_retries})" + Fore.RESET)
+                    Fore.RED
+                    + f"[⚠️] Request error occurred: {str(e)} - {filename} (Attempt {attempt + 1}/{max_retries})"
+                    + Fore.RESET
+                )
             attempt += 1
             time.sleep(1)
 
     with lock:
-        print(Fore.RED + f"[❌] Failed after {max_retries} attempts - {filename}" + Fore.RESET)
+        print(
+            Fore.RED
+            + f"[❌] Failed after {max_retries} attempts - {filename}"
+            + Fore.RESET
+        )
     return False
 
 
@@ -118,7 +138,9 @@ def process_cookie_file(filename):
                         "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!",
                     }
                     cookies.append(additional_json)
-                    working_cookie_path = os.path.join(working_cookies_path, f"[{email}] - {plan}.json")
+                    working_cookie_path = os.path.join(
+                        working_cookies_path, f"[{email}] - {plan}.json"
+                    )
 
                     with lock:
                         if os.path.isfile(working_cookie_path):
@@ -129,7 +151,9 @@ def process_cookie_file(filename):
                             )
                             duplicate_cookies += 1
                         else:
-                            with open(working_cookie_path, "w", encoding="utf-8") as json_file:
+                            with open(
+                                working_cookie_path, "w", encoding="utf-8"
+                            ) as json_file:
                                 json.dump(cookies, json_file, indent=4)
                                 working_cookies += 1
 
@@ -159,7 +183,11 @@ def main():
     try:
         if os.path.isdir("json_cookies"):
             entries = os.listdir("json_cookies")
-            files = [entry for entry in entries if os.path.isfile(os.path.join("json_cookies", entry))]
+            files = [
+                entry
+                for entry in entries
+                if os.path.isfile(os.path.join("json_cookies", entry))
+            ]
             if len(files) == 0:
                 print(
                     Fore.RED
@@ -197,11 +225,9 @@ try:
     main()
     end = time.time()
     print(
-        Fore.YELLOW
-        + f"==================================="
-          f"\nSummary:\nTotal Cookies: {len(os.listdir('json_cookies'))}\nWorking Cookies: {working_cookies}\nExpired Cookies: {expired_cookies}\nDuplicate Cookies: {duplicate_cookies}\nInvalid Cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
-          f"\n================================="
-        + Fore.RESET
+        Fore.YELLOW + f"==================================="
+        f"\nSummary:\nTotal Cookies: {len(os.listdir('json_cookies'))}\nWorking Cookies: {working_cookies}\nExpired Cookies: {expired_cookies}\nDuplicate Cookies: {duplicate_cookies}\nInvalid Cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
+        f"\n=================================" + Fore.RESET
     )
 except KeyboardInterrupt:
     print(Fore.RED + "\n\n[⚠️] Program Interrupted by user" + Fore.RESET)
