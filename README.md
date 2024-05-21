@@ -11,6 +11,8 @@
    <img src="https://img.shields.io/github/languages/top/matheeshapathirana/Netflix-cookie-checker">
    <img src="https://img.shields.io/github/stars/matheeshapathirana/Netflix-cookie-checker">
    <img src="https://img.shields.io/github/forks/matheeshapathirana/Netflix-cookie-checker">
+   <img src="https://github.com/matheeshapathirana/Netflix-cookie-checker/actions/workflows/codeql.yml/badge.svg?branch=master")>
+   <img src="https://github.com/matheeshapathirana/Netflix-cookie-checker/actions/workflows/qodana_code_quality.yml/badge.svg")>
    <br>
    <img src="https://img.shields.io/github/last-commit/matheeshapathirana/Netflix-cookie-checker">
    <img src="https://img.shields.io/github/license/matheeshapathirana/Netflix-cookie-checker">
