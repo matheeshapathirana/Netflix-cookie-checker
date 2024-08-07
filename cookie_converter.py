@@ -90,17 +90,21 @@ try:
         print(Fore.RED + f"Folder {path} created!\n" + Fore.RESET)
     except FileExistsError:
         if (
-                input(
-                    Fore.YELLOW
-                    + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
-                    + Fore.RESET
-                )
-                == "y"
+            input(
+                Fore.YELLOW
+                + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
+                + Fore.RESET
+            )
+            == "y"
         ):
             shutil.rmtree(path)
             os.mkdir(path)
         else:
-            print(Fore.YELLOW + "Appending to existing 'json_cookies' folder\n" + Fore.RESET)
+            print(
+                Fore.YELLOW
+                + "Appending to existing 'json_cookies' folder\n"
+                + Fore.RESET
+            )
 
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
