@@ -10,14 +10,11 @@ init()
 def identify_file(file_name):
     try:
         with open(file_name, "r") as file_content:
-            # Try to parse the file as JSON
             json.load(file_content)
             return "json"
     except json.JSONDecodeError:
-        # If it fails to parse as JSON, assume it's a Netscape file
         return "netscape"
     except Exception as e:
-        # If any other error occurred, print it
         print(f"An error occurred while processing {file_name}: {str(e)}")
         return "error"
 
@@ -40,6 +37,14 @@ def convert_netscape_cookie_to_json(cookie_file_content):
 
     json_content = json.dumps(cookies, indent=4)
     return json_content
+
+
+def append_json_files(existing_file, data):
+    with open(existing_file, "r", encoding="utf-8") as m:
+        existing_data = json.load(m)
+    existing_data.extend(data)
+    with open(existing_file, "w", encoding="utf-8") as m:
+        json.dump(existing_data, m, indent=4)
 
 
 no_of_cookies = 0
@@ -85,42 +90,57 @@ try:
         print(Fore.RED + f"Folder {path} created!\n" + Fore.RESET)
     except FileExistsError:
         if (
-            input(
-                Fore.YELLOW
-                + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
-                + Fore.RESET
-            )
-            == "y"
+                input(
+                    Fore.YELLOW
+                    + "Do you want to remove old cookies folder? (y/n)\n [y] Recommended \n [n] New cookies will be appended > : "
+                    + Fore.RESET
+                )
+                == "y"
         ):
             shutil.rmtree(path)
             os.mkdir(path)
         else:
-            print(
-                Fore.RED
-                + "[⚠️] Error Occurred: Failed to create 'json_cookies' folder, Exiting..."
-                + Fore.RESET
-            )
-            sys.exit()
+            print(Fore.YELLOW + "Appending to existing 'json_cookies' folder\n" + Fore.RESET)
 
     for filename in os.listdir(folder_path):
         filepath = os.path.join(folder_path, filename)
         if os.path.isfile(filepath):
             file_type = identify_file(filepath)
             if file_type == "json":
-                shutil.copy(filepath, os.path.join(path, filename))
-                print(
-                    Fore.GREEN
-                    + f"[✔️] {filename} - Copied to 'json_cookies' folder!"
-                    + Fore.RESET
-                )
+                destination_path = os.path.join(path, filename)
+                if os.path.exists(destination_path):
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        new_data = json.load(f)
+                    append_json_files(destination_path, new_data)
+                    print(
+                        Fore.GREEN
+                        + f"[✔️] {filename} - Appended to 'json_cookies' folder!"
+                        + Fore.RESET
+                    )
+                else:
+                    shutil.copy(filepath, destination_path)
+                    print(
+                        Fore.GREEN
+                        + f"[✔️] {filename} - Copied to 'json_cookies' folder!"
+                        + Fore.RESET
+                    )
             elif file_type == "netscape":
                 with open(filepath, "r", encoding="utf-8") as file:
                     content = file.read()
 
-                json_data = convert_netscape_cookie_to_json(content)
+                json_data = json.loads(convert_netscape_cookie_to_json(content))
 
-                with open(f"json_cookies/{filename}", "w", encoding="utf-8") as f:
-                    f.write(json_data)
+                destination_path = os.path.join(path, filename)
+                if os.path.exists(destination_path):
+                    append_json_files(destination_path, json_data)
+                    print(
+                        Fore.GREEN
+                        + f"[✔️] {filename} - Appended to 'json_cookies' folder!"
+                        + Fore.RESET
+                    )
+                else:
+                    with open(destination_path, "w", encoding="utf-8") as f:
+                        f.write(json.dumps(json_data, indent=4))
                     print(Fore.GREEN + f"[✔️] {filename} - DONE!" + Fore.RESET)
                     no_of_cookies += 1
             else:
