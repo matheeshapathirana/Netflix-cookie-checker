@@ -19,7 +19,7 @@
    <br>
    <img src="https://img.shields.io/github/issues/matheeshapathirana/Netflix-cookie-checker">
    <img src="https://img.shields.io/github/issues-closed/matheeshapathirana/Netflix-cookie-checker">
-   <img src ="https://hits.dwyl.com/matheeshapathirana/Netflix-cookie-checker.svg">
+   <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2Fmatheeshapathirana%2FNetflix-cookie-checker&label=Hits&icon=github&color=%23198754&message=&style=flat&tz=UTC">
    <br>
    <br>
    <img src="https://repobeats.axiom.co/api/embed/97888767d68bc2104aed23c14f34d310822b4bc8.svg">
