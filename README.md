@@ -25,6 +25,23 @@
    <img src="https://repobeats.axiom.co/api/embed/97888767d68bc2104aed23c14f34d310822b4bc8.svg">
 </p>
 
+# 🆕 What's New
+ 
+> **Latest update** brings full proxy support with automatic validation, a native file picker UI, and more reliable account data extraction.
+ 
+<details open>
+<summary><b>Proxy Support — Latest</b></summary>
+ 
+### ✨ New Features
+- **Proxy support** — HTTP, HTTPS, SOCKS4, and SOCKS5 proxies now fully supported
+- **Automatic proxy validation** — dead proxies are filtered out before checking begins, so no time is wasted
+- **Native file picker** — a Tkinter dialog window lets you browse and select your proxy list instead of editing config files
+
+### 🔧 Fixes
+- **Email extraction rewritten** — now reads directly from Netflix's embedded `reactContext` JSON instead of relying on a CSS selector that no longer exists on live pages
+- **Plan extraction fixed** — regex cleanup no longer mangles plan names; `\xNN` and `\uNNNN` escape sequences are decoded correctly
+- **Country extraction** — `countryOfSignup` is now read reliably from the same JSON blob, with a proper `"Unknown"` fallback
+ </details>
 
 # Installation
 
@@ -51,13 +68,38 @@
 
 ## [Try colab-version](https://github.com/matheeshapathirana/Netflix-cookie-checker/tree/colab-version)
 
-##  Features
-- Multi-threading
-- Json + Netscape support
-- No Proxies Required
-- No Rate Limiting
-- Super Fast
-- Identify duplicate cookies
+
+# Proxy Support
+ 
+### Proxy File Format
+ 
+Your proxy file should be a plain `.txt` with one proxy per line. All common formats are supported:
+ 
+```
+# host:port
+1.2.3.4:8080
+ 
+# host:port:user:pass
+1.2.3.4:8080:myuser:mypass
+ 
+# user:pass@host:port
+myuser:mypass@1.2.3.4:8080
+```
+ 
+Lines starting with `#` are ignored.
+ 
+ 
+## Features
+ 
+- ✅ Multi-threading
+- ✅ JSON + Netscape cookie support
+- ✅ Optional proxy support (HTTP / HTTPS / SOCKS4 / SOCKS5)
+- ✅ Automatic proxy validation before use
+- ✅ No rate limiting
+- ✅ Super fast
+- ✅ Identifies duplicate cookies
+- ✅ Detects extra memberships
+
 
 # For any issues
 <a href="https://discord.gg/RSCdKeKB5X"><img src="https://discord.com/api/guilds/1121457935822901278/widget.png?style=banner2"></a>
