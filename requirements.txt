@@ -1,4 +1,4 @@
 beautifulsoup4==4.14.3
 colorama==0.4.6
-requests==2.33.0
+requests==2.33.1
 lxml==6.0.2
