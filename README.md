@@ -26,22 +26,17 @@
 </p>
 
 # 🆕 What's New
- 
-> **Latest update** brings full proxy support with automatic validation, a native file picker UI, and more reliable account data extraction.
- 
-<details open>
-<summary><b>Proxy Support — Latest</b></summary>
- 
-### ✨ New Features
-- **Proxy support** — HTTP, HTTPS, SOCKS4, and SOCKS5 proxies now fully supported
-- **Automatic proxy validation** — dead proxies are filtered out before checking begins, so no time is wasted
-- **Native file picker** — a Tkinter dialog window lets you browse and select your proxy list instead of editing config files
 
-### 🔧 Fixes
-- **Email extraction rewritten** — now reads directly from Netflix's embedded `reactContext` JSON instead of relying on a CSS selector that no longer exists on live pages
-- **Plan extraction fixed** — regex cleanup no longer mangles plan names; `\xNN` and `\uNNNN` escape sequences are decoded correctly
-- **Country extraction** — `countryOfSignup` is now read reliably from the same JSON blob, with a proper `"Unknown"` fallback
- </details>
+> **Latest update** improves cookie validity detection, duplicate filtering, and proxy safety.
+
+<details open>
+<summary><b>Checker Reliability — Latest</b></summary>
+
+### ✨ New Features
+- **Updated cookie validity check** — More reliable detection of valid and expired cookies.
+- **Stronger duplicate detection** — Prevents saving the same working cookie multiple times.
+- **Existing-output duplicate scan** — Checks previously saved cookies to avoid duplicates across runs.
+</details>
 
 # Installation
 
@@ -95,9 +90,9 @@ Lines starting with `#` are ignored.
 - ✅ JSON + Netscape cookie support
 - ✅ Optional proxy support (HTTP / HTTPS / SOCKS4 / SOCKS5)
 - ✅ Automatic proxy validation before use
-- ✅ No rate limiting
+- ✅ Safer proxy mode with no silent direct-IP fallback
 - ✅ Super fast
-- ✅ Identifies duplicate cookies
+- ✅ Identifies duplicate cookies using cookie fingerprints
 - ✅ Detects extra memberships
 
 

