@@ -172,6 +172,14 @@ def is_netflix_login_url(url: str) -> bool:
     return host.endswith("netflix.com") and path.endswith("/login")
 
 
+def is_netflix_browse_url(url: str) -> bool:
+    """Working subscribed cookies should be able to reach /browse."""
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+    path = parsed.path.rstrip("/").lower()
+    return host.endswith("netflix.com") and path.startswith("/browse")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Proxy utilities
 # ─────────────────────────────────────────────────────────────────────────────
@@ -361,6 +369,21 @@ def open_webpage_with_cookies(session, link: str, json_cookies: list, filename: 
             if not is_netflix_account_url(response.url):
                 with lock:
                     reason = "redirected to login" if is_netflix_login_url(response.url) else f"ended at {response.url}"
+                    proxy_tag = f" | Proxy: {proxy_label(request_proxies)}" if USE_PROXY else ""
+                    print(Fore.RED + f"[❌] Cookie not working — {filename} ({reason}){proxy_tag}" + Fore.RESET)
+                    expired_cookies += 1
+                return False
+
+            browse_resp = session.get(
+                "https://www.netflix.com/browse",
+                timeout=20,
+                allow_redirects=True,
+                proxies=request_proxies,
+            )
+            browse_resp.raise_for_status()
+            if not is_netflix_browse_url(browse_resp.url):
+                with lock:
+                    reason = f"browse redirected to {browse_resp.url}"
                     proxy_tag = f" | Proxy: {proxy_label(request_proxies)}" if USE_PROXY else ""
                     print(Fore.RED + f"[❌] Cookie not working — {filename} ({reason}){proxy_tag}" + Fore.RESET)
                     expired_cookies += 1
