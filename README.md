@@ -47,10 +47,22 @@
 ```
 # Usage
 
-1.  Run [cookie_converter.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/b82b684355a80e23f5648e6082090d9cd5332cc3/cookie_converter.py) to convert Netscape cookies to json format.
+### 🖥️ Modern GUI
+Launch the dark-themed graphic interface with built-in converter and real-time checker:
+```bash
+python gui.py
+```
+
+### ⚡ Headless CLI (Ubuntu / Linux Server)
+Run the headless checker with command-line arguments:
+```bash
+python ubuntu_headless.py --cookies-dir json_cookies --output-dir working_cookies --threads 10 --proxy-file proxies.txt --proxy-type http
+```
+
+### 💻 Standard CLI
+1. Run [cookie_converter.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/b82b684355a80e23f5648e6082090d9cd5332cc3/cookie_converter.py) to convert Netscape cookies to json format.
 2. Edit the number of threads in [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/0627ae9af2c51276a7a1fa9880a4a82cf0e606d4/main.py).
-   https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/0cbea047e4635c9f0ab6736755336a9b5315b9e3/main.py#L20
-2. Run [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/5981527b46093775ecb027c73de0bcc6361eb5ea/main.py).
+3. Run [main.py](https://github.com/matheeshapathirana/Netflix-cookie-checker/blob/5981527b46093775ecb027c73de0bcc6361eb5ea/main.py).
 
 **make sure you have a good internet connection.**
 
