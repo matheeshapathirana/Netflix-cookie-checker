@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments & IDEs
+.vscode/
+.idea/
+.codex/
+.agents/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Executables & drivers
+*.exe
+chromedriver*
+geckodriver*
+
+# Cookie and credential files
+cookies/
+json_cookies/
+working_cookies/
+working_cookies old/
+cookies_with_extra_member/
+final/
+file.txt
+proxy.txt
+Proxy/
+
+# Local testing and scratch directories
+Dev/
+Alternatives/
+cache/
+Tests/
+Figma/
+
+# Analysis and logs
+qodana.sarif.json
+*.log
+*.html
+bike_state_chart
+
+# Local conflict and helper files
+*-Matheesha-PC.*
+json-fixer*.py
+Sub-dir-mover.py
+pro.py
+progress.py
